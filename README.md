@@ -33,7 +33,7 @@ https://splunkbase.splunk.com/app/4232
 3. tags.conf
 
 
-## Full list of detections (up to date since 31 Jan 2023)
+## Full list of detections (31 Jan 2023)
 
 Source: https://github.com/splunk/security_content/tree/develop/detections/endpoint
 
