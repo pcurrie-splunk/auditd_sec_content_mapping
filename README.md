@@ -26,6 +26,12 @@ https://splunkbase.splunk.com/app/3412
 
 https://splunkbase.splunk.com/app/4232
 
+### 3. Additional Splunk config
+
+1. props.conf
+2. eventtypes.conf
+3. tags.conf
+
 
 ## Full list of detections (up to date since 31 Jan 2023)
 
