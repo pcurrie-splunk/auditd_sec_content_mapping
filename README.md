@@ -16,9 +16,15 @@ service auditd reload
 auditctl -l
 ```
 
-2. Splunk add-ons
+### 2. Splunk add-ons
 
 Install the following Splunk Add-ons:
+
+https://splunkbase.splunk.com/app/833\ 
+
+https://splunkbase.splunk.com/app/3412 
+
+https://splunkbase.splunk.com/app/4232
 
 
 ## Full list of detections (up to date since 31 Jan 2023)
