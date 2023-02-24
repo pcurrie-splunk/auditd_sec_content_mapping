@@ -262,11 +262,11 @@ FILESYSTEM & PROCESS
 
 ### Linux System Network Discovery
 
-Datamodel: Endpoint.Processes
+Datamodel: Endpoint.Processes. 
 Auditd config: Y  
-CIM Mapping: Processes.process_name, Processes.process_id, Processes.parent_process_id, Processes.process_guid, Processes.dest, Processes.user
-Search: No change
-Limitations: may capture normal event made by administrator during auditing or testing network connection of specific host or network to network
+CIM Mapping: Processes.process_name, Processes.process_id, Processes.parent_process_id, Processes.process_guid, Processes.dest, Processes.user  
+Search: No change  
+Limitations: may capture normal event made by administrator during auditing or testing network connection of specific host or network to network  
 Sample events:    
 
 ```
