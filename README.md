@@ -243,9 +243,9 @@ PROCESS
 ### Linux Add Files In Known Crontab Directories
 
 Auditd config: Y  
-CIM Mapping: file_path, dest, file_create_time, file_name, process_guid
-Search: No change required.  
-Limitations: Known crontab config locations only.
+CIM Mapping: file_path, dest, file_create_time, file_name, process_guid  
+Search: No change required  
+Limitations: Known crontab config locations only  
 Sample events:    
 
 ```
