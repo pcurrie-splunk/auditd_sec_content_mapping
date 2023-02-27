@@ -163,7 +163,17 @@ type=PROCTITLE msg=audit(01/22/2023 03:44:58.662:5955) : proctitle=touch /root/.
 
 ### Linux Possible Access Or Modification Of sshd Config File
 
-Process.  
+Datamodel: Endpoint.Processes  
+Auditd config:   
+CIM Mapping: Processes.process_name, Processes.process, Processes.dest, Processes.user, Processes.parent_process_name, Processes.process_id Processes.parent_process_id
+Search: No change  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(02/27/2023 13:55:26.404:786) : pid=5156 uid=test-2 auid=test-2 ses=38 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=cat /etc/ssh/sshd_config terminal=pts/1 res=success' 
+
+```
 
 
 ### Linux File Created In Kernel Driver Directory
