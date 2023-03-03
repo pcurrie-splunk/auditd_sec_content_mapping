@@ -128,6 +128,20 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Service Restarted |![image](https://user-images.githubusercontent.com/111749978/215733461-1d59b737-157e-458d-aef9-dab0f49c62af.png)
 
 
+### TEMPLATE
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+ 
+
+```  
+
 
 START:
 
@@ -145,7 +159,11 @@ type=PROCTITLE msg=audit(01/05/2023 18:45:39.929:872) : proctitle=vi /etc/doas.c
 
 ### Linux Doas Tool Execution
 
-PROCESS.  
+Can't install on Centos7 
+
+```
+
+```  
 
 ### Linux Possible Ssh Key File Creation
 
@@ -206,7 +224,18 @@ type=PATH msg=audit(02/03/2023 19:04:34.591:925) : item=3 name=/etc/at.deny inod
 
 ### Linux Possible Append Command To At Allow Config File
 
-PROCESS
+Datamodel:  
+Auditd config:    
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events: 
+Comments: will not work as the search is looking for process containing "echo" and "/etc/at.allow". "echo" is a shell built-in commandf
+
+```
+ 
+
+``` 
 
 ### Linux High Frequency Of File Deletion In Etc Folder
 
