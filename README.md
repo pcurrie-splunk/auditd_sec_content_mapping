@@ -179,6 +179,54 @@ type=PATH msg=audit(01/22/2023 03:44:58.662:5955) : item=1 name=/root/.ssh/testf
 type=PROCTITLE msg=audit(01/22/2023 03:44:58.662:5955) : proctitle=touch /root/.ssh/testfile 
 ```
 
+### Linux NOPASSWD Entry In Sudoers File
+
+Datamodel: Processes AND/OR Filesystem
+Auditd config: Yes  
+CIM Mapping:   
+Search: The search provided will not work with auditd since it is looking for result of echo command. As alternative auditd will monitor the sudoers/sudoers.d file/directory for changed not specific to NOPASSWD but any change. Also can monitor usage of visudo executable.
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where Processes.process = "*visudo*" by Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)` | `security_content_ctime(lastTime)` | `linux_nopasswd_entry_in_sudoers_file_filter`
+```
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime FROM datamodel=Endpoint.Filesystem where Filesystem.file_path IN ("*sudoers*") by Filesystem.dest Filesystem.file_create_time Filesystem.file_name Filesystem.process_guid Filesystem.file_path | `drop_dm_object_name(Filesystem)` | `security_content_ctime(lastTime)` | `security_content_ctime(firstTime)` | `linux_add_files_in_known_crontab_directories_filter`
+```
+
+Limitations: This will monitor any changes to sudoers/sudoers.d in Filesystem datamodel and visudo in Processes datamodel 
+Sample events:    
+
+visudo:
+```
+type=SYSCALL msg=audit(03/03/2023 19:08:13.691:1637) : arch=x86_64 syscall=rename success=yes exit=0 a0=0x5579997b28f0 a1=0x5579997b1c40 a2=0x0 a3=0x7fa21b65e570 items=5 ppid=14249 pid=14253 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=42 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=actions 
+type=PROCTITLE msg=audit(03/03/2023 19:08:13.691:1637) : proctitle=visudo 
+type=SYSCALL msg=audit(03/03/2023 19:08:06.713:1636) : arch=x86_64 syscall=open success=yes exit=3 a0=0x5579997b1c40 a1=O_RDWR|O_CREAT a2=0440 a3=0x2 items=2 ppid=14249 pid=14253 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=42 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=actions 
+type=PROCTITLE msg=audit(03/03/2023 19:08:06.713:1636) : proctitle=visudo 
+type=SYSCALL msg=audit(03/03/2023 19:08:06.713:1635) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55f762084248 a1=0x55f762096198 a2=0x55f7620aae60 a3=0x0 items=2 ppid=14249 pid=14253 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=42 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=visudo 
+type=EXECVE msg=audit(03/03/2023 19:08:06.713:1635) : argc=1 a0=visudo 
+type=PATH msg=audit(03/03/2023 19:08:06.713:1635) : item=0 name=/sbin/visudo inode=474263 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/03/2023 19:08:06.713:1635) : proctitle=visudo 
+type=USER_CMD msg=audit(03/03/2023 19:08:06.713:1632) : pid=14249 uid=test-2 auid=test-2 ses=42 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=visudo terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/03/2023 19:07:58.949:1629) : arch=x86_64 syscall=open success=no exit=EACCES(Permission denied) a0=0x5599f76d3c40 a1=O_RDWR|O_CREAT a2=0440 a3=0x2 items=2 ppid=13259 pid=14248 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=42 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=actions 
+type=PROCTITLE msg=audit(03/03/2023 19:07:58.949:1629) : proctitle=visudo 
+type=SYSCALL msg=audit(03/03/2023 19:07:58.949:1628) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xbd3480 a1=0xbd3560 a2=0xbd2ee0 a3=0x7ffc5d9537e0 items=2 ppid=13259 pid=14248 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=42 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=visudo 
+type=EXECVE msg=audit(03/03/2023 19:07:58.949:1628) : argc=1 a0=visudo 
+type=PATH msg=audit(03/03/2023 19:07:58.949:1628) : item=0 name=/usr/sbin/visudo inode=474263 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/03/2023 19:07:58.949:1628) : proctitle=visudo 
+type=CONFIG_CHANGE msg=audit(03/03/2023 19:07:27.762:1620) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=visudo list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/03/2023 19:07:27.762:1584) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=visudo list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/03/2023 19:07:18.112:1544) : auid=root ses=39 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=visudo list=exit res=yes 
+type=USER_CMD msg=audit(03/03/2023 19:02:49.267:1459) : pid=13864 uid=test-2 auid=test-2 ses=42 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=visudo terminal=pts/1 res=success' 
+```  
+
+sudoers:
+```
+type=PATH msg=audit(03/03/2023 19:29:29.173:1748) : item=0 name=/etc/sudoers inode=34487884 dev=fd:00 mode=file,777 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/03/2023 19:29:29.167:1747) : item=1 name=/etc/sudoers inode=34487884 dev=fd:00 mode=file,777 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/03/2023 19:29:06.400:1746) : item=0 name=/etc/sudoers inode=34487884 dev=fd:00 mode=file,440 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```
+
+
 ### Linux Possible Access Or Modification Of sshd Config File
 
 Datamodel: Endpoint.Processes  
