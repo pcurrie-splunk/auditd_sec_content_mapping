@@ -37,10 +37,10 @@ https://splunkbase.splunk.com/app/4232
 
 Source: https://github.com/splunk/security_content/tree/develop/detections/endpoint
 
-| Search | 
-| --- |
-| [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) |
-| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) |
+| Search | done |
+| --- | --- |
+| [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) | d |
+| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | 
 | [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) |
 | [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) |
 | [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) |
@@ -163,6 +163,7 @@ Can't install on Centos7
 
 ```
 
+
 ```  
 
 ### Linux Possible Ssh Key File Creation
@@ -178,6 +179,29 @@ type=PATH msg=audit(01/22/2023 03:44:58.662:5955) : item=0 name=/root/.ssh/ inod
 type=PATH msg=audit(01/22/2023 03:44:58.662:5955) : item=1 name=/root/.ssh/testfile inode=33563185 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:ssh_home_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 type=PROCTITLE msg=audit(01/22/2023 03:44:58.662:5955) : proctitle=touch /root/.ssh/testfile 
 ```
+
+### Linux c89 Privilege Escalation
+
+Datamodel: Processes  
+Auditd config: Yes    
+CIM Mapping: Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid  
+Search: Change required, remove sudo/mapping condition
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where Processes.process="*c89*"  by Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+```
+
+Limitations: legitimate usage of c89  
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/16/2023 15:02:05.411:644) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x557c7e50d248 a1=0x557c7e51f1c8 a2=0x557c7e533ed0 a3=0x0 items=3 ppid=6378 pid=6382 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=2 comm=c89 exe=/usr/bin/bash subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=c89 
+type=EXECVE msg=audit(03/16/2023 15:02:05.411:644) : argc=5 a0=/bin/sh a1=/bin/c89 a2=-wrapper a3=/bin/sh,-s a4=. 
+type=PATH msg=audit(03/16/2023 15:02:05.411:644) : item=0 name=/bin/c89 inode=101123552 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/16/2023 15:02:05.411:644) : proctitle=/bin/sh /bin/c89 -wrapper /bin/sh,-s . 
+type=USER_CMD msg=audit(03/16/2023 15:02:05.411:641) : pid=6378 uid=test-2 auid=test-2 ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=c89 -wrapper /bin/sh,-s . terminal=pts/1 res=success' 
+
+```  
 
 ### Linux NOPASSWD Entry In Sudoers File
 
