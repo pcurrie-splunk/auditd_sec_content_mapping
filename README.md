@@ -41,13 +41,13 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | --- | --- |
 | [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) | d |
 | [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | 
-| [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) |
-| [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) |
-| [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) |
-| [Linux Doas Tool Execution](#Linux-Doas-Tool-Execution) |
-| [Linux AWK Privilege Escalation[(#Linux-AWK-Privilege-Escalation) |
-| [Linux Ruby Privilege Escalation](#Linux-Ruby-Privilege-Escalation) |
-| [Linux pkexec Privilege Escalation](#Linux-pkexec-Privilege-Escalation) |
+| [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) | d |
+| [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) | d |
+| [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) | d |
+| [Linux Doas Tool Execution](#Linux-Doas-Tool-Execution) | Not available in Centos |
+| [Linux AWK Privilege Escalation[(#Linux-AWK-Privilege-Escalation) | d |
+| [Linux Ruby Privilege Escalation](#Linux-Ruby-Privilege-Escalation) | d |
+| [Linux pkexec Privilege Escalation](#Linux-pkexec-Privilege-Escalation) | d |
 | [Linux Deleting Critical Directory Using RM Command](#Linux-Deleting-Critical-Directory-Using-RM-Command) |
 | [Linux Find Privilege Escalation](#Linux-Find-Privilege-Escalation) |
 | [Linux Add Files In Known Crontab Directories](#Linux-Add-Files-In-Known-Crontab-Directories) |
@@ -163,7 +163,6 @@ Can't install on Centos7
 
 ```
 
-
 ```  
 
 ### Linux Possible Ssh Key File Creation
@@ -208,7 +207,7 @@ type=USER_CMD msg=audit(03/16/2023 15:02:05.411:641) : pid=6378 uid=test-2 auid=
 Datamodel: Processes AND/OR Filesystem
 Auditd config: Yes  
 CIM Mapping:   
-Search: The search provided will not work with auditd since it is looking for result of echo command. As alternative auditd will monitor the sudoers/sudoers.d file/directory for changed not specific to NOPASSWD but any change. Also can monitor usage of visudo executable.
+Search: The search provided will not work with auditd since it is looking for result of echo command. As alternative auditd will monitor the sudoers/sudoers.d file/directory for changed not specific to NOPASSWD but any change. Processes datamodel will can monitor usage of visudo executable.
 
 ```
 | tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where Processes.process = "*visudo*" by Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)` | `security_content_ctime(lastTime)` | `linux_nopasswd_entry_in_sudoers_file_filter`
@@ -249,6 +248,84 @@ type=PATH msg=audit(03/03/2023 19:29:29.173:1748) : item=0 name=/etc/sudoers ino
 type=PATH msg=audit(03/03/2023 19:29:29.167:1747) : item=1 name=/etc/sudoers inode=34487884 dev=fd:00 mode=file,777 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 type=PATH msg=audit(03/03/2023 19:29:06.400:1746) : item=0 name=/etc/sudoers inode=34487884 dev=fd:00 mode=file,440 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 ```
+
+### Linux AWK Privilege Escalation
+
+Datamodel: Processes  
+Auditd config: Yes   
+CIM Mapping: Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid  
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where Processes.process="*awk*"  AND Processes.process="*BEGIN*system*" by Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)` | `security_content_ctime(lastTime)`| `linux_awk_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/16/2023 15:55:12.730:434) : pid=2707 uid=test-2 auid=test-2 ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=awk BEGIN {system("/bin/bash")} terminal=pts/1 res=success' 
+
+```  
+
+### Linux Ruby Privilege Escalation
+
+Datamodel: Processes  
+Auditd config: Yes   
+CIM Mapping: 
+Search: Remove sudo condition 
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where Processes.process="*ruby*-e*" AND Processes.process="*exec*" by Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_ruby_privilege_escalation_filter`
+ ```
+
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/16/2023 16:45:05.798:825) : pid=5940 uid=test-2 auid=test-2 ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=ruby -e exec "/bin/sh" terminal=pts/1 res=success'
+```  
+
+
+### Linux pkexec Privilege Escalation
+
+Datamodel: Processes  
+Auditd config:   
+CIM Mapping: 
+Search: Remove regex filter | regex process="(^.{1}$)"
+
+```
+| tstats `security_content_summariesonly` count FROM datamodel=Endpoint.Processes where Processes.process_name=pkexec by _time Processes.dest Processes.process_id
+  Processes.parent_process_name Processes.process_name Processes.process Processes.process_path | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)` | `security_content_ctime(lastTime)` | `linux_pkexec_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=USER_START msg=audit(03/16/2023 17:16:34.968:1202) : pid=8048 uid=test-2 auid=test-2 ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:session_open grantors=pam_keyinit,pam_limits,pam_systemd,pam_unix acct=root exe=/usr/bin/pkexec hostname=localhost.localdomain addr=? terminal=pts/1 res=success' 
+type=PATH msg=audit(03/16/2023 17:16:30.020:1199) : item=0 name=/usr/bin/pkexec inode=100959683 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/16/2023 17:16:30.020:1199) : proctitle=pkexec /bin/sh 
+type=PATH msg=audit(03/16/2023 17:16:20.073:1198) : item=0 name=/usr/bin/pkexec inode=100959683 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/16/2023 17:16:20.073:1198) : proctitle=pkexec 
+type=PATH msg=audit(03/16/2023 17:16:16.366:1197) : item=0 name=/usr/bin/pkexec inode=100959683 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```  
+
+### Linux Deleting Critical Directory Using RM Command
+
+Datamodel:   
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+ 
+
+```  
+
+
 
 
 ### Linux Possible Access Or Modification Of sshd Config File
@@ -329,22 +406,6 @@ Sample events:
 zxcv
 
 ```
-
-### Linux AWK Privilege Escalation
-
-PROCESS
-
-### Linux Ruby Privilege Escalation
-
-PROCESS
-
-### Linux pkexec Privilege Escalation
-
-PROCESS
-
-### Linux Deleting Critical Directory Using RM Command
-
-PROCESS
 
 ### Linux Find Privilege Escalation
 
