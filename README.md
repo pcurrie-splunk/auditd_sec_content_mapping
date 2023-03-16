@@ -125,7 +125,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Setuid Using Setcap Utility |
 | Linux Sudo OR Su Execution |
 | Linux Stop Services |
-| Linux Service Restarted |![image](https://user-images.githubusercontent.com/111749978/215733461-1d59b737-157e-458d-aef9-dab0f49c62af.png)
+| Linux Service Restarted |
 
 
 ### TEMPLATE
