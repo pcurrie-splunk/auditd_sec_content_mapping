@@ -313,17 +313,46 @@ type=PATH msg=audit(03/16/2023 17:16:16.366:1197) : item=0 name=/usr/bin/pkexec 
 
 ### Linux Deleting Critical Directory Using RM Command
 
-Datamodel:   
-Auditd config:   
-CIM Mapping: 
-Search:  
+Datamodel: Processes  
+Auditd config: Yes  
+CIM Mapping:   
+Search: No change  
 Limitations:   
 Sample events:    
 
 ```
- 
+type=PROCTITLE msg=audit(03/17/2023 02:31:03.393:4655) : proctitle=rm -rf /var/tmp/boot/ 
+type=PROCTITLE msg=audit(03/17/2023 02:31:03.393:4654) : proctitle=rm -rf /var/tmp/boot/ 
 
 ```  
+
+### Linux Find Privilege Escalation
+
+Datamodel: Process  
+Auditd config: Yes   
+CIM Mapping: Processes.dest Processes.user Processes.parent_process_name Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid
+Search: Remove sudo filter 
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) 
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*find*" AND Processes.process="*-exec*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_find_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/17/2023 16:11:07.373:506) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5643bb379248 a1=0x5643bb38b198 a2=0x5643bb39ef00 a3=0x0 items=2 ppid=2017 pid=2019 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=2 comm=find exe=/usr/bin/find subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=find_priv_escalation 
+type=EXECVE msg=audit(03/17/2023 16:11:07.373:506) : argc=6 a0=find a1=. a2=-exec a3=/bin/sh a4=; a5=-quit 
+type=PATH msg=audit(03/17/2023 16:11:07.373:506) : item=0 name=/bin/find inode=100680441 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/17/2023 16:11:07.373:506) : proctitle=find . -exec /bin/sh ; -quit 
+type=USER_CMD msg=audit(03/17/2023 16:11:07.363:503) : pid=2017 uid=test-2 auid=test-2 ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=find . -exec /bin/sh ; -quit terminal=pts/1 res=success' 
+
+```  
+
 
 
 
@@ -407,9 +436,6 @@ zxcv
 
 ```
 
-### Linux Find Privilege Escalation
-
-PROCESS
 
 
 ### Linux Add Files In Known Crontab Directories
