@@ -1,3 +1,6 @@
+
+
+
 # auditd_sec_content_mapping
 mapping auditd configuration to security content endpoint detections
 
@@ -100,7 +103,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Insert Kernel Module Using Insmod Utility |
 | [Linux Edit Cron Table Parameter](#Linux-Edit-Cron-Table-Parameter) |
 | Linux Possible Cronjob Modification With Editor |
-| Linux Setuid Using Chmod Utility |
+| Linux Setuid Using Chmod Utility(#Linux-Setuid-Using-Chmod-Utility) | d |
 | Linux Possible Append Command To Profile Config File |
 | Linux Decode Base64 to Shell |
 | Linux MySQL Privilege Escalation |
@@ -121,8 +124,8 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Persistence and Privilege Escalation Risk Behavior |
 | Linux SSH Remote Services Script Execute |
 | Linux Make Privilege Escalation |
-| Linux Node Privilege Escalation |
-| Linux Setuid Using Setcap Utility |
+| Linux Node Privilege Escalation(#Linux-Node-Privilege-Escalation) |
+| Linux Setuid Using Setcap Utility | d |
 | Linux Sudo OR Su Execution | d |
 | Linux Stop Services(#Linux-Stop-Services) | d |
 | Linux Service Restarted(#Linux-Service-Restarted) | d |
@@ -144,6 +147,90 @@ Sample events:
 
 
 START:
+
+
+
+### Linux Node Privilege Escalation
+
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  Remove sudo  
+
+```
+| tstats summariesonly=f count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*node*" AND Processes.process="*-e*" AND Processes.process="*child_process.spawn*" AND Processes.process="*stdio*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_node_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/19/2023 19:19:11.077:1494) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55e92fe10248 a1=0x55e92fe22198 a2=0x55e92fe35f40 a3=0x0 items=2 ppid=5010 pid=5012 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=node exe=/usr/bin/node subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=node_priv_escalation 
+type=EXECVE msg=audit(03/19/2023 19:19:11.077:1494) : argc=5 a0=node a1=-e a2=child_process.spawn(/bin/sh, a3={stdio: a4=[0,1,2]}) 
+type=PATH msg=audit(03/19/2023 19:19:11.077:1494) : item=0 name=/bin/node inode=101196429 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 19:19:11.077:1494) : proctitle=node -e child_process.spawn(/bin/sh, {stdio: [0,1,2]}) 
+type=USER_CMD msg=audit(03/19/2023 19:19:11.064:1491) : pid=5010 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=node -e child_process.spawn(/bin/sh, {stdio: [0,1,2]}) terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/19/2023 19:19:04.977:1486) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55832d31c248 a1=0x55832d32e198 a2=0x55832d341f40 a3=0x0 items=2 ppid=5004 pid=5006 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=node exe=/usr/bin/node subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=node_priv_escalation 
+type=EXECVE msg=audit(03/19/2023 19:19:04.977:1486) : argc=5 a0=node a1=-e a2=child_process.spawn(/bin/sh, a3={stdio: a4=[0,1,2]}) 
+type=PATH msg=audit(03/19/2023 19:19:04.977:1486) : item=0 name=/bin/node inode=101196429 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 19:19:04.977:1486) : proctitle=node -e child_process.spawn(/bin/sh, {stdio: [0,1,2]}) 
+type=USER_CMD msg=audit(03/19/2023 19:19:04.875:1483) : pid=5004 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=node -e child_process.spawn(/bin/sh, {stdio: [0,1,2]}) terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/19/2023 19:18:56.873:1477) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x12dbb00 a1=0x13060f0 a2=0x12dbee0 a3=0x7ffecd4313a0 items=2 ppid=1338 pid=4950 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=node exe=/usr/bin/node subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=node_priv_escalation 
+type=EXECVE msg=audit(03/19/2023 19:18:56.873:1477) : argc=5 a0=node a1=-e a2=child_process.spawn(/bin/sh, a3={stdio: a4=[0,1,2]}) 
+type=PATH msg=audit(03/19/2023 19:18:56.873:1477) : item=0 name=/usr/bin/node inode=101196429 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 19:18:56.873:1477) : proctitle=node -e child_process.spawn(/bin/sh, {stdio: [0,1,2]}) 
+type=SYSCALL msg=audit(03/19/2023 19:17:35.433:1469) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55f707555248 a1=0x55f707567198 a2=0x55f70757bea0 a3=0x0 items=2 ppid=4889 pid=4893 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=node exe=/usr/bin/node subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=node_priv_escalation 
+type=EXECVE msg=audit(03/19/2023 19:17:35.433:1469) : argc=5 a0=node a1=-e a2=child_process.spawn(node, a3=[support.js, a4=i]) 
+type=PATH msg=audit(03/19/2023 19:17:35.433:1469) : item=0 name=/bin/node inode=101196429 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 19:17:35.433:1469) : proctitle=node -e child_process.spawn(node, [support.js, i]) 
+type=USER_CMD msg=audit(03/19/2023 19:17:35.421:1466) : pid=4889 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=node -e child_process.spawn(node, [support.js, i]) terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/19/2023 19:17:25.185:1463) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x1304790 a1=0x12db720 a2=0x12dbee0 a3=0x7ffecd4313a0 items=2 ppid=1338 pid=4887 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=node exe=/usr/bin/node subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=node_priv_escalation 
+
+``` 
+
+
+### Linux Setuid Using Chmod Utility
+
+Datamodel:   
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/19/2023 18:44:25.481:805) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x12f43d0 a1=0x12f4450 a2=0x12dbee0 a3=0x7ffecd4313a0 items=2 ppid=1338 pid=2128 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=chmod exe=/usr/bin/chmod subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=chmod 
+type=EXECVE msg=audit(03/19/2023 18:44:25.481:805) : argc=3 a0=chmod a1=g+s a2=evil3_bin 
+type=PATH msg=audit(03/19/2023 18:44:25.481:805) : item=0 name=/usr/bin/chmod inode=100817938 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 18:44:25.481:805) : proctitle=chmod g+s evil3_bin 
+type=SYSCALL msg=audit(03/19/2023 18:44:17.982:802) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x557bb79db248 a1=0x557bb79ed198 a2=0x557bb7a01e90 a3=0x0 items=2 ppid=2123 pid=2127 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=chmod exe=/usr/bin/chmod subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=chmod 
+type=EXECVE msg=audit(03/19/2023 18:44:17.982:802) : argc=3 a0=chmod a1=g+s a2=evil2_bin 
+type=PATH msg=audit(03/19/2023 18:44:17.982:802) : item=0 name=/bin/chmod inode=100817938 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/19/2023 18:44:17.982:802) : proctitle=chmod g+s evil2_bin 
+type=USER_CMD msg=audit(03/19/2023 18:44:17.971:799) : pid=2123 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=chmod g+s evil2_bin terminal=pts/0 res=success' 
+
+```  
+
+
+### Linux Setuid Using Setcap Utility
+
+Datamodel: Processes  
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/19/2023 18:37:35.526:509) : pid=1474 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=setcap cap_net_raw+ep ./hello_test2 terminal=pts/0 res=success' 
+
+```  
+
 
 
 ### Linux Sudo OR Su Execution
