@@ -99,36 +99,36 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Account Manipulation Of SSH Config and Keys |
 | Linux At Application Execution |
 | Linux Docker Privilege Escalation |
-| Linux Service Started Or Enabled |
-| Linux Insert Kernel Module Using Insmod Utility |
-| [Linux Edit Cron Table Parameter](#Linux-Edit-Cron-Table-Parameter) |
-| Linux Possible Cronjob Modification With Editor |
+| [Linux Service Started Or Enabled](#Linux-Service-Started-Or-Enabled) |
+| [Linux Insert Kernel Module Using Insmod Utility](#Linux-Insert-Kernel-Module-Using-Insmod-Utility) | d |
+| [Linux Edit Cron Table Parameter](#Linux-Edit-Cron-Table-Parameter) | d |
+| [Linux Possible Cronjob Modification With Editor](#Linux-Possible-Cronjob-Modification-With-Editor) | d |
 | Linux Setuid Using Chmod Utility(#Linux-Setuid-Using-Chmod-Utility) | d |
-| Linux Possible Append Command To Profile Config File |
-| Linux Decode Base64 to Shell |
-| Linux MySQL Privilege Escalation |
-| Linux Emacs Privilege Escalation |
-| Linux DD File Overwrite |
-| Linux Kworker Process In Writable Process Path |
-| Linux Ingress Tool Transfer Hunting |
-| Linux Adding Crontab Using List Parameter | d |
-| Linux Proxy Socks Curl | d |
-| Linux Change File Owner To Root(#Linux-Change-File-Owner-To-Root) | d |
+| [Linux Possible Append Command To Profile Config File](#Linux-Possible-Append-Command-To-Profile-Config-File) | d |
+| Linux Decode Base64 to Shell | d |
+| Linux MySQL Privilege Escalation | d |
+| Linux Emacs Privilege Escalation | d |
+| [Linux DD File Overwrite](#Linux-DD-File-Overwrite) | d |
+| [Linux Kworker Process In Writable Process Path](#Linux-Kworker-Process-In-Writable-Process-Path) | d |
+| [Linux Ingress Tool Transfer Hunting](#Linux-Ingress-Tool-Transfer-Hunting) | d |
+| [Linux Adding Crontab Using List Parameter] | d |
+| [Linux Proxy Socks Curl] | d |
+| [Linux Change File Owner To Root](#Linux-Change-File-Owner-To-Root) | d |
 | [Linux Doas Conf File Creation](#Linux-Doas-Conf-File-Creation) | d |
-| Linux Ngrok Reverse Proxy Usage(#Linux-Ngrok-Reverse-Proxy-Usage) | d |
-| Linux Composer Privilege Escalation | d |
-| Linux OpenVPN Privilege Escalation | d |
-| Linux Csvtool Privilege Escalation(#Linux-Csvtool-Privilege-Escalation) | d |
+| [Linux Ngrok Reverse Proxy Usage](#Linux-Ngrok-Reverse-Proxy-Usage) | d |
+| [Linux Composer Privilege Escalation] | d |
+| [Linux OpenVPN Privilege Escalation] | d |
+| [Linux Csvtool Privilege Escalation](#Linux-Csvtool-Privilege-Escalation) | d |
 | [Linux At Allow Config File Creation](#Linux-At-Allow-Config-File-Creation) | d |
-| Linux Sqlite3 Privilege Escalation(#Linux-Sqlite3-Privilege-Escalation) | d |
-| Linux Persistence and Privilege Escalation Risk Behavior(#Linux-Persistence-and-Privilege-Escalation-Risk-Behavior) | aggregate rule |
-| Linux SSH Remote Services Script Execute(#Linux-SSH-Remote-Services-Script-Execute) | d |
-| Linux Make Privilege Escalation(#Linux-Make-Privilege-Escalation) | d |
-| Linux Node Privilege Escalation(#Linux-Node-Privilege-Escalation) | d |
-| Linux Setuid Using Setcap Utility | d |
-| Linux Sudo OR Su Execution | d |
-| Linux Stop Services(#Linux-Stop-Services) | d |
-| Linux Service Restarted(#Linux-Service-Restarted) | d |
+| [Linux Sqlite3 Privilege Escalation](#Linux-Sqlite3-Privilege-Escalation) | d |
+| [Linux Persistence and Privilege Escalation Risk Behavior](#Linux-Persistence-and-Privilege-Escalation-Risk-Behavior) | aggregate rule |
+| [Linux SSH Remote Services Script Execute](#Linux-SSH-Remote-Services-Script-Execute) | d |
+| [Linux Make Privilege Escalation](#Linux-Make-Privilege-Escalation) | d |
+| [Linux Node Privilege Escalation](#Linux-Node-Privilege-Escalation) | d |
+| [Linux Setuid Using Setcap Utility] | d |
+| [Linux Sudo OR Su Execution] | d |
+| [Linux Stop Services](#Linux-Stop-Services) | d |
+| [Linux Service Restarted](#Linux-Service-Restarted) | d |
 
 
 ### TEMPLATE
@@ -148,6 +148,221 @@ Sample events:
 START:
 
 
+### Linux Service Started Or Enabled
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+
+```  
+
+
+### Linux Insert Kernel Module Using Insmod Utility
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process = *insmod* by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_insert_kernel_module_using_insmod_utility_filter`
+```
+
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/20/2023 13:59:04.622:8227) : pid=21159 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=insmod rootkit.ko terminal=pts/0 res=success' 
+type=USER_CMD msg=audit(03/20/2023 13:58:54.258:8208) : pid=21097 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=insmod rootkit.ko terminal=pts/0 res=success' 
+type=CONFIG_CHANGE msg=audit(03/20/2023 13:58:33.223:8202) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=insmod list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 13:58:33.223:8127) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=insmod list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 13:58:30.032:8046) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=insmod list=exit res=yes 
+type=USER_CMD msg=audit(03/20/2023 13:57:07.258:7883) : pid=20908 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=insmod rootkit.ko terminal=pts/0 res=success' 
+```  
+
+
+### Linux Edit Cron Table Parameter
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 13:51:33.171:7491) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x55aa7cfc42e0 a1=0x7ffe5ad48790 a2=0x0 a3=0x8 items=2 ppid=12751 pid=20445 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=crontab exe=/usr/bin/crontab subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PATH msg=audit(03/20/2023 13:51:33.171:7491) : item=1 name=/tmp/crontab.GXI6X7 inode=35326438 dev=fd:00 mode=file,600 ouid=test-2 ogid=test-2 rdev=00:00 obj=unconfined_u:object_r:user_tmp_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.171:7491) : proctitle=crontab -e 
+type=SYSCALL msg=audit(03/20/2023 13:51:33.171:7490) : arch=x86_64 syscall=rename success=yes exit=0 a0=0x55aa7cfc32e0 a1=0x7ffe5ad48a30 a2=0x7ffe5ad48a46 a3=0x2 items=4 ppid=12751 pid=20445 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=crontab exe=/usr/bin/crontab subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.171:7490) : proctitle=crontab -e 
+type=SYSCALL msg=audit(03/20/2023 13:51:33.171:7489) : arch=x86_64 syscall=fchown success=yes exit=0 a0=0x5 a1=0x3e9 a2=0xffffffff a3=0x2 items=1 ppid=12751 pid=20445 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=crontab exe=/usr/bin/crontab subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.171:7489) : proctitle=crontab -e 
+type=SYSCALL msg=audit(03/20/2023 13:51:33.171:7488) : arch=x86_64 syscall=open success=yes exit=5 a0=0x55aa7cfc32e0 a1=O_RDWR|O_CREAT|O_EXCL a2=0600 a3=0x0 items=2 ppid=12751 pid=20445 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=crontab exe=/usr/bin/crontab subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.171:7488) : proctitle=crontab -e 
+type=PATH msg=audit(03/20/2023 13:51:33.171:7487) : item=1 name=/tmp/.crontab.GXI6X7.swp inode=35326441 dev=fd:00 mode=file,600 ouid=test-2 ogid=test-2 rdev=00:00 obj=unconfined_u:object_r:user_tmp_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.171:7487) : proctitle=/usr/bin/vi /tmp/crontab.GXI6X7 
+type=PATH msg=audit(03/20/2023 13:51:33.137:7486) : item=0 name=/tmp/crontab.GXI6X7 inode=35326438 dev=fd:00 mode=file,600 ouid=test-2 ogid=test-2 rdev=00:00 obj=unconfined_u:object_r:user_tmp_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 13:51:33.137:7486) : proctitle=/usr/bin/vi /tmp/crontab.GXI6X7 
+type=PATH msg=audit(03/20/2023 13:51:23.978:7485) : item=0 name=/tmp/.crontab.GXI6X7.swp inode=35326441 dev=fd:00 mode=file,600 ouid=test-2 ogid=test-2 rdev=00:00 obj=unconfined_u:object_r:user_tmp_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```  
+
+
+
+
+### Linux Possible Cronjob Modification With Editor
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PATH msg=audit(03/20/2023 13:49:00.656:7433) : item=1 name=/etc/crontab~ inode=33563203 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:system_cron_spool_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=SYSCALL msg=audit(03/20/2023 13:49:00.656:7432) : arch=x86_64 syscall=setxattr success=yes exit=0 a0=0x16f9730 a1=0x7f6333d4ce2f a2=0x1717db0 a3=0x1c items=1 ppid=20243 pid=20247 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=vi exe=/usr/bin/vi subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PATH msg=audit(03/20/2023 13:49:00.656:7432) : item=0 name=/etc/crontab inode=35326439 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:system_cron_spool_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=SYSCALL msg=audit(03/20/2023 13:49:00.656:7431) : arch=x86_64 syscall=chmod success=yes exit=0 a0=0x16f9730 a1=0644 a2=0x0 a3=0x29 items=1 ppid=20243 pid=20247 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=vi exe=/usr/bin/vi subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PATH msg=audit(03/20/2023 13:49:00.656:7431) : item=0 name=/etc/crontab inode=35326439 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:system_cron_spool_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=SYSCALL msg=audit(03/20/2023 13:49:00.656:7430) : arch=x86_64 syscall=setxattr success=yes exit=0 a0=0x16f9730 a1=0x7f6334196f6a a2=0x171b010 a3=0x29 items=1 ppid=20243 pid=20247 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=vi exe=/usr/bin/vi subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=SYSCALL msg=audit(03/20/2023 13:49:00.647:7429) : arch=x86_64 syscall=open success=yes exit=3 a0=0x16f9730 a1=O_WRONLY|O_CREAT|O_TRUNC a2=0644 a3=0x0 items=2 ppid=20243 pid=20247 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=vi exe=/usr/bin/vi subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=SYSCALL msg=audit(03/20/2023 13:49:00.647:7428) : arch=x86_64 syscall=rename success=yes exit=0 a0=0x16f9730 a1=0x171c440 a2=0xfffffffffffffe80 a3=0x7ffcefd27b20 items=4 ppid=20243 pid=20247 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=vi exe=/usr/bin/vi subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cron 
+type=PATH msg=audit(03/20/2023 13:49:00.647:7428) : item=2 name=/etc/crontab inode=33563203 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:system_cron_spool_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/20/2023 13:49:00.647:7428) : item=3 name=/etc/crontab~ inode=33563203 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:system_cron_spool_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+``` 
+
+
+### Linux Possible Append Command To Profile Config File
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: echo is an in-built so not available    
+Sample events:    
+
+```
+
+```  
+
+
+
+
+### Linux Decode Base64 to Shell
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: covered by other base64 search, commands with | come through as separate events   
+Sample events:    
+
+```
+
+```  
+
+
+
+
+### Linux MySQL Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*mysql*-e*" AND Processes.process="*\!**" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_mysql_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/20/2023 13:11:53.671:6098) : pid=17699 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=mysql -e ! /bin/sh terminal=pts/0 res=failed' 
+```  
+
+
+
+### Linux Emacs Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) 
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*emacs*" AND Processes.process="*--eval*"  by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_emacs_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/20/2023 13:08:39.005:6068) : pid=17502 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=emacs --eval (term /bin/sh) terminal=pts/0 res=success' 
+```  
+
+
+
+### Linux DD File Overwrite
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/20/2023 12:58:44.051:5560) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55fe154e7248 a1=0x55fe154f9198 a2=0x55fe1550def0 a3=0x0 items=2 ppid=16567 pid=16571 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts0 ses=44 comm=dd exe=/usr/bin/dd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=dd_overwrite 
+type=EXECVE msg=audit(03/20/2023 12:58:44.051:5560) : argc=5 a0=dd a1=of=/dev/zero a2=if=/var/log/syslog a3=count= a4=iflag=count_bytes 
+type=PATH msg=audit(03/20/2023 12:58:44.051:5560) : item=0 name=/bin/dd inode=100817946 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:58:44.051:5560) : proctitle=dd of=/dev/zero if=/var/log/syslog count= iflag=count_bytes 
+type=USER_CMD msg=audit(03/20/2023 12:58:44.013:5557) : pid=16567 uid=test-2 auid=test-2 ses=44 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=dd of=/dev/zero if=/var/log/syslog count= iflag=count_bytes terminal=pts/0 res=success' 
+type=SYSCALL msg=audit(03/20/2023 12:57:51.015:5549) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19f82b0 a1=0x19e7930 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=16511 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=dd exe=/usr/bin/dd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=dd_overwrite 
+type=EXECVE msg=audit(03/20/2023 12:57:51.015:5549) : argc=4 a0=dd a1=of=/dev/zero a2=if=/var/log/syslog a3=count=iflag=count_bytes 
+type=PATH msg=audit(03/20/2023 12:57:51.015:5549) : item=0 name=/usr/bin/dd inode=100817946 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:57:51.015:5549) : proctitle=dd of=/dev/zero if=/var/log/syslog count=iflag=count_bytes 
+type=SYSCALL msg=audit(03/20/2023 12:57:43.223:5548) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19f8440 a1=0x19caec0 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=16510 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=dd exe=/usr/bin/dd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=dd_overwrite 
+type=EXECVE msg=audit(03/20/2023 12:57:43.223:5548) : argc=5 a0=dd a1=of=/dev/zero a2=if=/var/log/syslog a3=count= a4=iflag=count_bytes 
+type=PATH msg=audit(03/20/2023 12:57:43.223:5548) : item=0 name=/usr/bin/dd inode=100817946 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:57:43.223:5548) : proctitle=dd of=/dev/zero if=/var/log/syslog count= iflag=count_bytes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:57:33.512:5546) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=dd_overwrite list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:57:33.512:5476) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=dd_overwrite list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/20/2023 12:57:29.166:5400) : auid=root ses=2 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=dd_overwrite list=exit res=yes 
+```  
+
+
+### Linux Kworker Process In Writable Process Path
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: Not able to deploy   
+Sample events:    
+
+```
+
+```  
+
+
+
 ### Linux Ingress Tool Transfer Hunting
 
 Datamodel: 
@@ -158,6 +373,14 @@ Limitations:
 Sample events:    
 
 ```
+type=SYSCALL msg=audit(03/20/2023 12:46:02.845:5178) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19f7420 a1=0x19f8250 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=15680 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:46:02.845:5178) : argc=2 a0=curl a1=www.google.com 
+type=PATH msg=audit(03/20/2023 12:46:02.845:5178) : item=0 name=/usr/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:46:02.845:5178) : proctitle=curl www.google.com 
+type=SYSCALL msg=audit(03/20/2023 12:45:58.145:5177) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x19e7a80 a1=0x19f74e0 a2=0x19cdee0 a3=0x7ffe84cdf3e0 items=2 ppid=12751 pid=15679 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts0 ses=44 comm=wget exe=/usr/bin/wget subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/20/2023 12:45:58.145:5177) : argc=2 a0=wget a1=www.google.com 
+type=PATH msg=audit(03/20/2023 12:45:58.145:5177) : item=0 name=/usr/bin/wget inode=100890640 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/20/2023 12:45:58.145:5177) : proctitle=wget www.google.com 
 
 ```  
 
@@ -1097,27 +1320,6 @@ Sample events:
 
 ```
 
-
-
-
-
-
-
-
-
-### Linux Edit Cron Table Parameter
-
-
-
-Auditd config:  
-CIM Mapping: 
-Search: No change required.  
-Limitations: 
-Sample events:    
-
-```
-
-```
 
 
 
