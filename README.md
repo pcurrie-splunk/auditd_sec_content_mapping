@@ -60,22 +60,8 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Deletion Of Cron Jobs](#Linux-Deletion-Of-Cron-Jobs) | d |
 | [Linux Disable Services](#Linux-Disable-Services) | d |
 | [Linux Install Kernel Module Using Modprobe Utility](#Linux-Install-Kernel-Module-Using-Modprobe-Utility) | d |
-| Linux File Creation In Profile Directory(#Linux-File-Creation-In-Profile-Directory) | d |
-| Linux Shred Overwrite Command |
-| Linux Kernel Module Enumeration |
-| Linux GDB Privilege Escalation |
-| Linux APT Privilege Escalation |
-| Linux Cpulimit Privilege Escalation |
-| Linux apt-get Privilege Escalation |
-| [Linux High Frequency Of File Deletion In Etc Folder](#Linux-High-Frequency-Of-File-Deletion-In-Etc-Folder) |
-| Linux Octave Privilege Escalation |
-| Linux Add User Account |
-| Linux Possible Append Cronjob Entry on Existing Cronjob File |
-| Linux Possible Access To Sudoers File |
-| Linux PHP Privilege Escalation |
-| Linux Service File Created In Systemd Directory |
-| Linux Visudo Utility Execution |
-| [Linux Sudoers Tmp File Creation](#Linux-Sudoers-Tmp-File-Creation) |
+| [Linux File Creation In Profile Directory](#Linux-File-Creation-In-Profile-Directory) | d |
+| [Linux Sudoers Tmp File Creation](#Linux-Sudoers-Tmp-File-Creation) | d |
 | [Linux Possible Append Command To At Allow Config File](#Linux-Possible-Append-Command-To-At-Allow-Config-File) | not work echo |
 | [Linux Busybox Privilege Escalation](#Linux-Busybox-Privilege-Escalation) | d |
 | [Linux Preload Hijack Library Calls](#Linux-Preload-Hijack-Library-Calls) | d |
@@ -105,19 +91,19 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Possible Cronjob Modification With Editor](#Linux-Possible-Cronjob-Modification-With-Editor) | d |
 | Linux Setuid Using Chmod Utility(#Linux-Setuid-Using-Chmod-Utility) | d |
 | [Linux Possible Append Command To Profile Config File](#Linux-Possible-Append-Command-To-Profile-Config-File) | d |
-| Linux Decode Base64 to Shell | d |
-| Linux MySQL Privilege Escalation | d |
-| Linux Emacs Privilege Escalation | d |
+| [Linux Decode Base64 to Shell](#Linux-Decode-Base64-to-Shell) | d |
+| [Linux MySQL Privilege Escalation](#Linux-MySQL-Privilege-Escalation) | d |
+| [Linux Emacs Privilege Escalation](#Linux-Emacs-Privilege-Escalation) | d |
 | [Linux DD File Overwrite](#Linux-DD-File-Overwrite) | d |
 | [Linux Kworker Process In Writable Process Path](#Linux-Kworker-Process-In-Writable-Process-Path) | d |
 | [Linux Ingress Tool Transfer Hunting](#Linux-Ingress-Tool-Transfer-Hunting) | d |
-| [Linux Adding Crontab Using List Parameter] | d |
-| [Linux Proxy Socks Curl] | d |
+| [Linux Adding Crontab Using List Parameter](#Linux-Adding-Crontab-Using-List-Parameter) | d |
+| [Linux Proxy Socks Curl](#Linux-Proxy-Socks-Curl) | d |
 | [Linux Change File Owner To Root](#Linux-Change-File-Owner-To-Root) | d |
 | [Linux Doas Conf File Creation](#Linux-Doas-Conf-File-Creation) | d |
 | [Linux Ngrok Reverse Proxy Usage](#Linux-Ngrok-Reverse-Proxy-Usage) | d |
-| [Linux Composer Privilege Escalation] | d |
-| [Linux OpenVPN Privilege Escalation] | d |
+| [Linux Composer Privilege Escalation](#Linux-Composer-Privilege-Escalation) | d |
+| [Linux OpenVPN Privilege Escalation](#Linux-OpenVPN-Privilege-Escalation) | d |
 | [Linux Csvtool Privilege Escalation](#Linux-Csvtool-Privilege-Escalation) | d |
 | [Linux At Allow Config File Creation](#Linux-At-Allow-Config-File-Creation) | d |
 | [Linux Sqlite3 Privilege Escalation](#Linux-Sqlite3-Privilege-Escalation) | d |
@@ -125,11 +111,24 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux SSH Remote Services Script Execute](#Linux-SSH-Remote-Services-Script-Execute) | d |
 | [Linux Make Privilege Escalation](#Linux-Make-Privilege-Escalation) | d |
 | [Linux Node Privilege Escalation](#Linux-Node-Privilege-Escalation) | d |
-| [Linux Setuid Using Setcap Utility] | d |
-| [Linux Sudo OR Su Execution] | d |
+| [Linux Setuid Using Setcap Utility](#Linux-Setuid-Using-Setcap-Utility) | d |
+| [Linux Sudo OR Su Execution](#Linux-Sudo-OR-Su-Execution) | d |
 | [Linux Stop Services](#Linux-Stop-Services) | d |
 | [Linux Service Restarted](#Linux-Service-Restarted) | d |
-
+| Linux Shred Overwrite Command |
+| Linux Kernel Module Enumeration |
+| Linux GDB Privilege Escalation |
+| Linux APT Privilege Escalation |
+| Linux Cpulimit Privilege Escalation |
+| Linux apt-get Privilege Escalation |
+| [Linux High Frequency Of File Deletion In Etc Folder](#Linux-High-Frequency-Of-File-Deletion-In-Etc-Folder) |
+| Linux Octave Privilege Escalation |
+| Linux Add User Account |
+| Linux Possible Append Cronjob Entry on Existing Cronjob File |
+| Linux Possible Access To Sudoers File |
+| Linux PHP Privilege Escalation |
+| Linux Service File Created In Systemd Directory |
+| Linux Visudo Utility Execution |
 
 ### TEMPLATE
 
