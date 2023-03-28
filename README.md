@@ -75,17 +75,17 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux PHP Privilege Escalation |
 | Linux Service File Created In Systemd Directory |
 | Linux Visudo Utility Execution |
-| Linux Sudoers Tmp File Creation |
-| [Linux Possible Append Command To At Allow Config File](#Linux-Possible-Append-Command-To-At-Allow-Config-File) |
-| [Linux Busybox Privilege Escalation](#Linux-Busybox-Privilege-Escalation) |
-| [Linux Preload Hijack Library Calls](#Linux-Preload-Hijack-Library-Calls) |
-| [Linux RPM Privilege Escalation](#Linux-RPM-Privilege-Escalation) |
-| Linux Puppet Privilege Escalation |
-| Linux SSH Authorized Keys Modification |
-| Linux Clipboard Data Copy |
-| Linux Deletion Of Init Daemon Script |
-| Linux Gem Privilege Escalation |
-| Linux Ingress Tool Transfer with Curl |
+| [Linux Sudoers Tmp File Creation](#Linux-Sudoers-Tmp-File-Creation) |
+| [Linux Possible Append Command To At Allow Config File](#Linux-Possible-Append-Command-To-At-Allow-Config-File) | not work echo |
+| [Linux Busybox Privilege Escalation](#Linux-Busybox-Privilege-Escalation) | d |
+| [Linux Preload Hijack Library Calls](#Linux-Preload-Hijack-Library-Calls) | d |
+| [Linux RPM Privilege Escalation](#Linux-RPM-Privilege-Escalation) | d |
+| [Linux Puppet Privilege Escalation](#Linux-Puppet-Privilege-Escalation) | can't install |
+| [Linux SSH Authorized Keys Modification](#Linux-SSH-Authorized-Keys-Modification) | d |
+| [Linux Clipboard Data Copy](#Linux-Clipboard-Data-Copy) | d |
+| [Linux Deletion Of Init Daemon Script](#Linux-Deletion-Of-Init-Daemon-Script) | d |
+| [Linux Gem Privilege Escalation](#Linux-Gem-Privilege-Escalation) | d |
+| [Linux Ingress Tool Transfer with Curl](#Linux-Ingress-Tool-Transfer-with-Curl) | d |
 | [Linux High Frequency Of File Deletion In Boot Folder](#Linux-High-Frequency-Of-File-Deletion-In-Boot-Folder) | d |
 | [Linux Common Process For Elevation Control](#Linux-Common-Process-For-Elevation-Control) | d |
 | [Linux GNU Awk Privilege Escalation](#Linux-GNU-Awk-Privilege-Escalation) | d |
@@ -144,10 +144,203 @@ Sample events:
 
 ```  
 
-
 START:
 
+### Linux Sudoers Tmp File Creation
 
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PATH msg=audit(03/28/2023 15:47:42.302:9774) : item=1 name=/etc/sudoers.tmp inode=34709948 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 15:47:42.302:9774) : proctitle=touch /etc/sudoers.tmp 
+type=USER_CMD msg=audit(03/28/2023 15:47:42.294:9771) : pid=27052 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=touch /etc/sudoers.tmp terminal=pts/1 res=success' 
+type=PATH msg=audit(03/28/2023 15:47:33.952:9767) : item=1 name=/etc/sudoers.tmp inode=34709948 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 15:47:33.952:9767) : proctitle=touch /etc/sudoers.tmp 
+type=USER_CMD msg=audit(03/28/2023 15:47:33.952:9764) : pid=27044 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=touch /etc/sudoers.tmp terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/28/2023 15:45:34.724:9301) : pid=26754 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=touch /etc/sudoers.tmp terminal=pts/1 res=success' 
+```  
+
+### Linux Possible Append Command To At Allow Config File
+
+Datamodel:  
+Auditd config:    
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events: 
+Comments: will not work as the search is looking for process containing "echo" and "/etc/at.allow". "echo" is a shell built-in commandf
+
+```
+ 
+
+``` 
+
+
+### Linux Busybox Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*busybox*" AND Processes.process="*sh*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_busybox_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/28/2023 15:40:43.663:9185) : pid=26286 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=busybox sh terminal=pts/1 res=failed'
+``` 
+
+
+### Linux Preload Hijack Library Calls
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/28/2023 15:37:41.941:8733) : pid=25918 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=export LD_PRELOAD=./librootkit.so terminal=pts/1 res=failed' 
+```  
+
+
+### Linux RPM Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*rpm*--eval*" AND Processes.process="*lua:os.execute*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_rpm_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/28/2023 15:24:04.364:8473) : pid=24661 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=rpm --eval %{lua:os.execute(/bin/sh terminal=pts/1 res=success' 
+```  
+
+
+### Linux Puppet Privilege Escalation -> I cant install
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+
+```  
+
+
+### Linux SSH Authorized Keys Modification
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/28/2023 15:12:05.877:8196) : pid=23568 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=cat /root/.ssh/authorized_keys terminal=pts/1 res=success' 
+```  
+
+
+### Linux Clipboard Data Copy
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/28/2023 15:07:24.531:8122) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf77820 a1=0xf76990 a2=0xf4bee0 a3=0x7ffc8d8e4da0 items=2 ppid=1448 pid=23292 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=xclip exe=/usr/bin/xclip subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=xclip 
+type=EXECVE msg=audit(03/28/2023 15:07:24.531:8122) : argc=3 a0=xclip a1=-selection a2=clipboard 
+type=PATH msg=audit(03/28/2023 15:07:24.531:8122) : item=0 name=/usr/bin/xclip inode=101419723 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 15:07:24.531:8122) : proctitle=xclip -selection clipboard 
+type=CONFIG_CHANGE msg=audit(03/28/2023 15:07:04.954:8120) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=xclip list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/28/2023 15:07:04.954:8026) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=xclip list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/28/2023 15:06:46.966:7912) : auid=root ses=6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=xclip list=exit res=yes 
+type=SOFTWARE_UPDATE msg=audit(03/28/2023 15:05:48.798:7712) : pid=23058 uid=root auid=root ses=6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='sw=xclip-0.12-1.el6.x86_64 sw_type=rpm key_enforce=0 gpg_res=0 root_dir=/ comm=yum exe=/usr/bin/python2.7 hostname=localhost.localdomain addr=? terminal=pts/0 res=success' 
+type=USER_CMD msg=audit(03/28/2023 15:05:46.170:7709) : pid=23056 uid=root auid=root ses=6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=yum -y install xclip --nogpgcheck terminal=pts/0 res=success' 
+type=USER_CMD msg=audit(03/28/2023 15:05:02.726:7682) : pid=22978 uid=root auid=root ses=6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=yum -y install xclip terminal=pts/0 res=success' 
+type=USER_CMD msg=audit(03/28/2023 15:04:14.314:7667) : pid=22927 uid=root auid=root ses=6 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/root cmd=yum -y install xclip terminal=pts/0 res=success' 
+```  
+
+
+### Linux Deletion Of Init Daemon Script
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime FROM datamodel=Endpoint.Filesystem  
+  where Filesystem.action=deleted Filesystem.file_path IN ( "/etc/init.d/*") 
+  by _time span=1h Filesystem.file_name Filesystem.file_path Filesystem.dest Filesystem.process_guid Filesystem.action
+  | `drop_dm_object_name(Filesystem)` 
+  |rename process_guid as proc_guid 
+  | table  process_name process proc_guid file_name file_path action _time parent_process_name parent_process  process_path dest user
+  | `linux_deletion_of_init_daemon_script_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=PATH msg=audit(03/28/2023 14:41:39.067:7072) : item=1 name=/etc/init.d/test4 inode=616114 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 14:41:39.067:7071) : item=1 name=/etc/init.d/test3 inode=616113 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 14:41:39.067:7070) : item=1 name=/etc/init.d/test2 inode=616112 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 14:41:39.067:7069) : item=1 name=/etc/init.d/test1 inode=616111 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 14:41:39.067:7068) : item=1 name=/etc/init.d/test inode=616099 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```  
+
+
+
+### Linux Gem Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*gem*open*-e*" AND Processes.process="*-c*" AND Processes.process="*sudo*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_gem_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*gem*open*-e*" AND Processes.process="*-c*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_gem_privilege_escalation_filter`
+```  
 
 
 
@@ -1558,20 +1751,6 @@ type=PATH msg=audit(01/03/2023 17:56:29.074:709) : item=1 name=/lib/modules/3.10
 type=PROCTITLE msg=audit(01/03/2023 17:56:29.074:709) : proctitle=touch /lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/test-kernel-driv-file3.txt 
 ```
 
-### Linux Possible Append Command To At Allow Config File
-
-Datamodel:  
-Auditd config:    
-CIM Mapping: 
-Search:  
-Limitations:   
-Sample events: 
-Comments: will not work as the search is looking for process containing "echo" and "/etc/at.allow". "echo" is a shell built-in commandf
-
-```
- 
-
-``` 
 
 ### Linux High Frequency Of File Deletion In Etc Folder
 
@@ -1589,23 +1768,6 @@ PROCESS
 
 
 
-
-
-### Linux Preload Hijack Library Calls
-
-PROCESS
-
-### Linux RPM Privilege Escalation
-
-Auditd config: 
-CIM Mapping: 
-Search: No change required.  
-Limitations: 
-Sample events:    
-
-```
-
-```
 
 
 
