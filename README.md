@@ -94,12 +94,12 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Curl Upload File |
 | Linux Java Spawning Shell |
 | [Linux Deletion Of Services](#Linux-Deletion-Of-Services) |
-| Linux Iptables Firewall Modification |
-| Linux File Creation In Init Boot Directory |
-| Linux Account Manipulation Of SSH Config and Keys |
-| Linux At Application Execution |
-| Linux Docker Privilege Escalation |
-| [Linux Service Started Or Enabled](#Linux-Service-Started-Or-Enabled) |
+| [Linux Iptables Firewall Modification](#Linux Iptables Firewall Modification) | 
+| [Linux File Creation In Init Boot Directory](#Linux-File-Creation-In-Init-Boot-Directory) | d |
+| [Linux Account Manipulation Of SSH Config and Keys](#Linux-Account-Manipulation-Of-SSH-Config-and-Keys) | d |
+| [Linux At Application Execution](#Linux-At-Application-Execution) | d |
+| [Linux Docker Privilege Escalation](#Linux-Docker-Privilege-Escalation) | d |
+| [Linux Service Started Or Enabled](#Linux-Service-Started-Or-Enabled) |  |
 | [Linux Insert Kernel Module Using Insmod Utility](#Linux-Insert-Kernel-Module-Using-Insmod-Utility) | d |
 | [Linux Edit Cron Table Parameter](#Linux-Edit-Cron-Table-Parameter) | d |
 | [Linux Possible Cronjob Modification With Editor](#Linux-Possible-Cronjob-Modification-With-Editor) | d |
@@ -147,6 +147,137 @@ Sample events:
 
 START:
 
+
+
+
+### Linux Iptables Firewall Modification
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search: PPID not available, and any part of command after &> so removed from query  
+
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes
+  where  Processes.process = "*iptables *" AND Processes.process = "* --dport *" AND Processes.process = "* ACCEPT*"  AND Processes.process = "* tcp *"
+  by Processes.process_name Processes.process Processes.process_id Processes.parent_process_id Processes.process_guid Processes.dest _time span=10s
+  Processes.user Processes.parent_process_name  Processes.parent_process_path Processes.process_path
+  | rex field=Processes.process "--dport (?<port>3269|636|989|994|995|8443)"
+  | stats values(Processes.process) as processes_exec values(port) as ports values(Processes.process_guid) as guids values(Processes.process_id) as pids dc(port) as port_count count 
+  by Processes.process_name Processes.parent_process_name Processes.parent_process_id Processes.dest Processes.user Processes.parent_process_path Processes.process_path | where port_count >=3
+  | `drop_dm_object_name(Processes)`
+  | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)`
+  | `linux_iptables_firewall_modification_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=PROCTITLE msg=audit(03/28/2023 10:16:05.118:1812) : proctitle=iptables -I OUTPUT -p tcp --dport 3269 -j ACCEPT 
+type=USER_CMD msg=audit(03/28/2023 10:16:05.086:1809) : pid=3833 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=iptables -I OUTPUT -p tcp --dport 3269 -j ACCEPT terminal=pts/1 res=success' 
+type=PROCTITLE msg=audit(03/28/2023 10:10:19.445:1715) : proctitle=iptables -I OUTPUT -p tcp --dport 989 -j ACCEPT 
+type=USER_CMD msg=audit(03/28/2023 10:10:19.380:1712) : pid=3440 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=iptables -I OUTPUT -p tcp --dport 989 -j ACCEPT terminal=pts/1 res=success' 
+type=PROCTITLE msg=audit(03/28/2023 10:10:12.384:1708) : proctitle=iptables -I OUTPUT -p tcp --dport 636 -j ACCEPT 
+type=USER_CMD msg=audit(03/28/2023 10:10:12.332:1705) : pid=3437 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=iptables -I OUTPUT -p tcp --dport 636 -j ACCEPT terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/28/2023 10:10:01.428:1689) : pid=3424 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=sh -c iptables -I OUTPUT -p tcp --dport 636 -j ACCEPT terminal=pts/1 res=success' 
+type=USER_CMD msg=audit(03/28/2023 10:09:40.895:1677) : pid=3414 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=sh -c iptables -I OUTPUT -p tcp --dport 3269 -j ACCEPT terminal=pts/1 res=success' 
+```  
+
+
+### Linux File Creation In Init Boot Directory
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PROCTITLE msg=audit(03/28/2023 10:03:25.627:1559) : proctitle=vi /etc/rc.local 
+type=PROCTITLE msg=audit(03/28/2023 10:03:20.222:1558) : proctitle=vi /etc/rc.local 
+type=PROCTITLE msg=audit(03/28/2023 10:03:20.222:1557) : proctitle=vi /etc/rc.local 
+type=PATH msg=audit(03/28/2023 10:03:20.222:1556) : item=0 name=/etc/rc.d/ inode=100672588 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 10:03:20.222:1556) : item=1 name=/etc/rc.d/.rc.local.swp objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 10:03:20.222:1556) : proctitle=vi /etc/rc.local 
+type=PATH msg=audit(03/28/2023 10:03:20.222:1555) : item=0 name=/etc/rc.d/ inode=100672588 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 10:03:20.222:1555) : item=1 name=/etc/rc.d/.rc.local.swp objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 10:03:20.222:1555) : proctitle=vi /etc/rc.local 
+type=PATH msg=audit(03/28/2023 10:02:44.637:1544) : item=0 name=/etc/init.d/ inode=113353 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 10:02:44.637:1544) : item=1 name=/etc/init.d/test inode=616099 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 10:02:44.637:1544) : proctitle=touch /etc/init.d/test 
+type=USER_CMD msg=audit(03/28/2023 10:02:44.579:1541) : pid=2931 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=touch /etc/init.d/test terminal=pts/1 res=success' 
+type=PATH msg=audit(03/28/2023 10:02:36.136:1538) : item=0 name=/etc/init.d/ inode=113353 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:etc_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 10:02:36.136:1538) : item=1 name=/etc/init.d/test objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 10:02:36.136:1538) : proctitle=touch /etc/init.d/test 
+type=EXECVE msg=audit(03/28/2023 10:01:04.492:1329) : argc=3 a0=chmod a1=0640 a2=/etc/audit/audit.rules 
+type=PROCTITLE msg=audit(03/28/2023 10:01:04.492:1329) : proctitle=chmod 0640 /etc/audit/audit.rules 
+type=PATH msg=audit(03/28/2023 10:00:48.731:1203) : item=0 name=/etc/docker/key.json inode=34565163 dev=fd:00 mode=file,600 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:container_config_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 10:00:48.284:1189) : item=0 name=/etc/docker/seccomp.json inode=34565158 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:container_config_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```  
+
+
+
+
+### Linux Account Manipulation Of SSH Config and Keys
+
+Datamodel: Process & Filsystem  
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+
+```  
+
+
+
+### Linux At Application Execution
+
+Datamodel: Processes  
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_ACCT msg=audit(03/28/2023 09:48:28.238:784) : pid=1612 uid=root auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_localuser acct=test-2 exe=/usr/bin/at hostname=? addr=? terminal=atd res=success' 
+type=SYSCALL msg=audit(03/28/2023 09:48:28.232:783) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf78210 a1=0xf77ef0 a2=0xf4bee0 a3=0x7ffc8d8e4b20 items=2 ppid=1448 pid=1612 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=at exe=/usr/bin/at subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=at_susp 
+type=EXECVE msg=audit(03/28/2023 09:48:28.232:783) : argc=4 a0=at a1=now a2=+5 a3=minutes 
+type=PATH msg=audit(03/28/2023 09:48:28.232:783) : item=0 name=/usr/bin/at inode=101115755 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:crontab_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 09:48:28.232:783) : proctitle=at now +5 minutes 
+type=USER_ACCT msg=audit(03/28/2023 09:48:25.128:782) : pid=1609 uid=root auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_localuser acct=test-2 exe=/usr/bin/at hostname=? addr=? terminal=atd res=success' 
+type=SYSCALL msg=audit(03/28/2023 09:48:25.114:781) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf781f0 a1=0xf78080 a2=0xf4bee0 a3=0x7ffc8d8e4b20 items=2 ppid=1448 pid=1609 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=at exe=/usr/bin/at subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=at_susp 
+type=EXECVE msg=audit(03/28/2023 09:48:25.114:781) : argc=4 a0=at a1=now a2=+5 a3=minutes 
+type=PATH msg=audit(03/28/2023 09:48:25.114:781) : item=0 name=/usr/bin/at inode=101115755 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:crontab_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 09:48:25.114:781) : proctitle=at now +5 minutes 
+type=USER_ACCT msg=audit(03/28/2023 09:47:43.878:772) : pid=1600 uid=root auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_localuser acct=test-2 exe=/usr/bin/at hostname=? addr=? terminal=atd res=success' 
+type=SYSCALL msg=audit(03/28/2023 09:47:43.863:771) : arch=x86_64 syscall=execve success=yes exit=0 a0=0xf4c140 a1=0xf4c440 a2=0xf4bee0 a3=0x7ffc8d8e4da0 items=2 ppid=1448 pid=1600 auid=test-2 uid=test-2 gid=test-2 euid=root suid=root fsuid=root egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=9 comm=at exe=/usr/bin/at subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=at_susp 
+type=EXECVE msg=audit(03/28/2023 09:47:43.863:771) : argc=1 a0=at 
+type=PATH msg=audit(03/28/2023 09:47:43.863:771) : item=0 name=/usr/bin/at inode=101115755 dev=fd:00 mode=file,suid,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:crontab_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 09:47:43.863:771) : proctitle=at 
+```  
+
+
+### Linux Docker Privilege Escalation
+
+Datamodel: Processes  
+Auditd config: Yes  
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PROCTITLE msg=audit(03/24/2023 14:00:08.665:4736) : proctitle=/bin/sh /usr/bin/docker ps -aq -f status=dead 
+type=PROCTITLE msg=audit(03/24/2023 14:00:08.665:4735) : proctitle=/bin/sh /usr/bin/docker ps -aq -f status=dead 
+type=EXECVE msg=audit(03/24/2023 14:00:08.665:4734) : argc=6 a0=/bin/sh a1=/usr/bin/docker a2=ps a3=-aq a4=-f a5=status=dead 
+type=PROCTITLE msg=audit(03/24/2023 14:00:08.665:4734) : proctitle=/bin/sh /usr/bin/docker ps -aq -f status=dead 
+```  
 
 ### Linux Service Started Or Enabled
 
@@ -354,7 +485,7 @@ Datamodel:
 Auditd config:   
 CIM Mapping: 
 Search:  
-Limitations: Not able to deploy   
+Limitations: Not able to deploy in Centos  
 Sample events:    
 
 ```
@@ -457,22 +588,7 @@ type=USER_CMD msg=audit(03/20/2023 11:59:28.831:3642) : pid=12522 uid=test-2 aui
 type=SYSCALL msg=audit(03/19/2023 18:53:10.993:895) : arch=x86_64 syscall=chown success=yes exit=0 a0=0x28c48f0 a1=root a2=root a3=0x1b items=1 ppid=2691 pid=2693 auid=root uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=2 comm=yum exe=/usr/bin/python2.7 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=systemdfiles 
 
 ```  
-
-
-
-### 
-
-Datamodel: 
-Auditd config:   
-CIM Mapping: 
-Search:  
-Limitations:   
-Sample events:    
-
-```
  
-
-```  
 
 
 ### Linux Doas Conf File Creation
