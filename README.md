@@ -48,7 +48,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) | d |
 | [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) | d |
 | [Linux Doas Tool Execution](#Linux-Doas-Tool-Execution) | Not available in Centos |
-| [Linux AWK Privilege Escalation[(#Linux-AWK-Privilege-Escalation) | d |
+| [Linux AWK Privilege Escalation](#Linux-AWK-Privilege-Escalation) | d |
 | [Linux Ruby Privilege Escalation](#Linux-Ruby-Privilege-Escalation) | d |
 | [Linux pkexec Privilege Escalation](#Linux-pkexec-Privilege-Escalation) | d |
 | [Linux Deleting Critical Directory Using RM Command](#Linux-Deleting-Critical-Directory-Using-RM-Command) | d |
