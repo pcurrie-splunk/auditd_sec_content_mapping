@@ -80,7 +80,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Curl Upload File](#Linux-Curl-Upload-File) | d | 
 | [Linux Java Spawning Shell](#Linux-Deletion-Of-Services) | Not possible |
 | [Linux Deletion Of Services](#Linux-Deletion-Of-Services) | d |
-| [Linux Iptables Firewall Modification](#Linux Iptables Firewall Modification) | d |
+| [Linux Iptables Firewall Modification](#Linux-Iptables-Firewall-Modification) | d |
 | [Linux File Creation In Init Boot Directory](#Linux-File-Creation-In-Init-Boot-Directory) | d |
 | [Linux Account Manipulation Of SSH Config and Keys](#Linux-Account-Manipulation-Of-SSH-Config-and-Keys) | d |
 | [Linux At Application Execution](#Linux-At-Application-Execution) | d |
