@@ -86,10 +86,10 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Linux Deletion Of Init Daemon Script |
 | Linux Gem Privilege Escalation |
 | Linux Ingress Tool Transfer with Curl |
-| Linux High Frequency Of File Deletion In Boot Folder |
-| Linux Common Process For Elevation Control |
-| Linux GNU Awk Privilege Escalation |
-| Linux Possible Access To Credential Files |
+| [Linux High Frequency Of File Deletion In Boot Folder](#Linux-High-Frequency-Of-File-Deletion-In-Boot-Folder) | d |
+| [Linux Common Process For Elevation Control](#Linux-Common-Process-For-Elevation-Control) | d |
+| [Linux GNU Awk Privilege Escalation](#Linux-GNU-Awk-Privilege-Escalation) | d |
+| [Linux Possible Access To Credential Files](#Linux-Possible-Access-To-Credential-Files) | d |
 | [Linux c99 Privilege Escalation](#Linux-c99-Privilege-Escalation) | d |
 | [Linux Curl Upload File](#Linux-Curl-Upload-File) | d | 
 | [Linux Java Spawning Shell](#Linux-Deletion-Of-Services) | Not possible |
@@ -147,6 +147,106 @@ Sample events:
 
 START:
 
+
+
+
+
+### Linux High Frequency Of File Deletion In Boot Folder
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search: 
+```
+| tstats `security_content_summariesonly` values(Filesystem.file_name) as deletedFileNames values(Filesystem.user_category) as file_path_location dc(Filesystem.file_path) as numOfDelFilePath count min(_time) as firstTime max(_time) as lastTime 
+  FROM datamodel=Endpoint.Filesystem  
+  where Filesystem.action=deleted Filesystem.user_category=*boot*
+  | where numOfDelFilePath>5
+```
+Limitations: This is possible in a different way as described:  
+1. Alias the obj field to an unused field in the datamodel e.g. user_category  
+2. change the search to the example above
+3. This search shows large number of deleted files in boot directory  
+Sample events:    
+
+```
+type=PATH msg=audit(03/28/2023 13:44:54.146:5765) : item=1 name=file4 inode=529172 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:44:54.146:5764) : item=1 name=file5 inode=529171 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:44:54.146:5763) : item=1 name=file6 inode=529170 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:44:54.146:5762) : item=1 name=file7 inode=529169 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:44:54.146:5761) : item=1 name=file8 inode=529168 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:44:54.144:5760) : item=1 name=file9 inode=529167 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5374) : item=1 name=file9 inode=93 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5373) : item=1 name=file8 inode=92 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5372) : item=1 name=file7 inode=91 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5371) : item=1 name=file6 inode=90 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5370) : item=1 name=file5 inode=89 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5369) : item=1 name=file4 inode=88 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5368) : item=1 name=file3 inode=87 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5367) : item=1 name=file2 inode=86 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:25:15.999:5366) : item=1 name=file1 inode=85 dev=08:01 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:boot_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```  
+
+
+### Linux Common Process For Elevation Control
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/28/2023 13:05:24.255:4766) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x23a5510 a1=0x23a40d0 a2=0x23a0c50 a3=0x7fff2305fb60 items=2 ppid=14807 pid=14818 auid=unset uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=unset comm=chmod exe=/usr/bin/chmod subj=system_u:system_r:unconfined_service_t:s0 key=chmod 
+type=EXECVE msg=audit(03/28/2023 13:05:24.255:4766) : argc=3 a0=chmod a1=0640 a2=/etc/audit/audit.rules 
+type=PROCTITLE msg=audit(03/28/2023 13:05:24.255:4766) : proctitle=chmod 0640 /etc/audit/audit.rules 
+```  
+
+
+### Linux GNU Awk Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*gawk*" AND Processes.process="*BEGIN*{system*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)` | `linux_gnu_awk_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/28/2023 13:13:51.227:5101) : pid=15390 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=gawk BEGIN {system(/bin/sh;)} terminal=pts/1 res=success' 
+```  
+
+
+### Linux Possible Access To Credential Files
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PATH msg=audit(03/28/2023 13:10:08.042:5043) : item=2 name=/etc/passwd inode=34565154 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:passwd_file_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/28/2023 13:10:08.042:5043) : item=3 name=/etc/passwd~ inode=34565154 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:passwd_file_t:s0 objtype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:10:08.042:5043) : proctitle=vi /etc/passwd 
+type=PROCTITLE msg=audit(03/28/2023 13:10:08.042:5042) : proctitle=vi /etc/passwd 
+type=PROCTITLE msg=audit(03/28/2023 13:10:08.042:5041) : proctitle=vi /etc/passwd 
+type=PATH msg=audit(03/28/2023 13:10:03.586:5040) : item=0 name=/etc/.passwd.swp inode=33562211 dev=fd:00 mode=file,600 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:10:03.586:5040) : proctitle=vi /etc/passwd 
+type=PATH msg=audit(03/28/2023 13:10:03.586:5039) : item=1 name=/etc/.passwd.swp inode=33554891 dev=fd:00 mode=file,600 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:10:03.586:5039) : proctitle=vi /etc/passwd 
+type=PATH msg=audit(03/28/2023 13:10:03.586:5038) : item=1 name=/etc/.passwd.swpx inode=34709945 dev=fd:00 mode=file,600 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/28/2023 13:10:03.586:5038) : proctitle=vi /etc/passwd 
+type=USER_CMD msg=audit(03/28/2023 13:10:03.450:5035) : pid=15180 uid=test-2 auid=test-2 ses=9 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=vi /etc/passwd terminal=pts/1 res=success' 
+```  
 
 
 
