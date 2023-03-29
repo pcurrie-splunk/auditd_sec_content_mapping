@@ -54,7 +54,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Deleting Critical Directory Using RM Command](#Linux-Deleting-Critical-Directory-Using-RM-Command) | d |
 | [Linux Find Privilege Escalation](#Linux-Find-Privilege-Escalation) | d |
 | [Linux Add Files In Known Crontab Directories](#Linux-Add-Files-In-Known-Crontab-Directories) | d |
-| [Linux Deletion of SSL Certificate](#Linux-Deletion-of-SSL-Certificate) | b |
+| [Linux Deletion of SSL Certificate](#Linux-Deletion-of-SSL-Certificate) | d |
 | [Linux System Network Discovery](#Linux-System-Network-Discovery) | d |
 | [Linux Obfuscated Files or Information Base64 Decode](#Linux-Obfuscated-Files-or-Information-Base64-Decode) | d |
 | [Linux Deletion Of Cron Jobs](#Linux-Deletion-Of-Cron-Jobs) | d |
