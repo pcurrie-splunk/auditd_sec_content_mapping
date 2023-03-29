@@ -115,20 +115,20 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Sudo OR Su Execution](#Linux-Sudo-OR-Su-Execution) | d |
 | [Linux Stop Services](#Linux-Stop-Services) | d |
 | [Linux Service Restarted](#Linux-Service-Restarted) | d |
-| Linux Shred Overwrite Command |
-| Linux Kernel Module Enumeration |
-| Linux GDB Privilege Escalation |
-| Linux APT Privilege Escalation |
-| Linux Cpulimit Privilege Escalation |
-| Linux apt-get Privilege Escalation |
-| [Linux High Frequency Of File Deletion In Etc Folder](#Linux-High-Frequency-Of-File-Deletion-In-Etc-Folder) |
-| Linux Octave Privilege Escalation |
-| Linux Add User Account |
-| Linux Possible Append Cronjob Entry on Existing Cronjob File |
-| Linux Possible Access To Sudoers File |
-| Linux PHP Privilege Escalation |
-| Linux Service File Created In Systemd Directory |
-| Linux Visudo Utility Execution |
+| [Linux Shred Overwrite Command](#Linux-Shred-Overwrite-Command) | d |
+| [Linux Kernel Module Enumeration](#Linux-Kernel-Module-Enumeration) | d |
+| [Linux GDB Privilege Escalation](#Linux-GDB-Privilege-Escalation) | d |
+| [Linux APT Privilege Escalation](#Linux-APT-Privilege-Escalation) | d |
+| [Linux Cpulimit Privilege Escalation](#Linux-Cpulimit-Privilege-Escalation) | d |
+| [Linux apt-get Privilege Escalation](#Linux-apt-get-Privilege-Escalation) | d |
+| [Linux High Frequency Of File Deletion In Etc Folder](#Linux-High-Frequency-Of-File-Deletion-In-Etc-Folder) | d |
+| [Linux Octave Privilege Escalation](#Linux-Octave-Privilege-Escalation) | could not install centos7 |
+| [Linux Add User Account](#Linux-Add-User-Account) | d |
+| [Linux Possible Append Cronjob Entry on Existing Cronjob File](#Linux-Possible-Append-Cronjob-Entry-on-Existing-Cronjob-File) | shell built-in |
+| [Linux Possible Access To Sudoers File](#Linux-Possible-Access-To-Sudoers-File) | d |
+| [Linux PHP Privilege Escalation](#Linux-PHP-Privilege-Escalation) | d |
+| [Linux Service File Created In Systemd Directory](#Linux-Service-File-Created-In-Systemd-Directory) | d |
+| [Linux Visudo Utility Execution](#Linux-Visudo-Utility-Execution) | d |
 
 ### TEMPLATE
 
@@ -144,6 +144,308 @@ Sample events:
 ```  
 
 START:
+
+### Linux Visudo Utility Execution
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 19:22:22.028:10416) : arch=x86_64 syscall=open success=no exit=EACCES(Permission denied) a0=0x5599575a8c40 a1=O_RDWR|O_CREAT a2=0440 a3=0x2 items=2 ppid=6257 pid=13305 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=339 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=actions 
+type=PROCTITLE msg=audit(03/29/2023 19:22:22.028:10416) : proctitle=visudo 
+type=SYSCALL msg=audit(03/29/2023 19:22:22.025:10415) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x2665ff0 a1=0x2666030 a2=0x2654ee0 a3=0x7ffc3ede28a0 items=2 ppid=6257 pid=13305 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=339 comm=visudo exe=/usr/sbin/visudo subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=visudo 
+type=EXECVE msg=audit(03/29/2023 19:22:22.025:10415) : argc=1 a0=visudo 
+type=PATH msg=audit(03/29/2023 19:22:22.025:10415) : item=0 name=/usr/sbin/visudo inode=474263 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 19:22:22.025:10415) : proctitle=visudo 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:12:17.830:10096) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=visudo list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:12:17.830:9987) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=visudo list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:12:12.682:9866) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=visudo list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:12:12.668:9758) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=remove_rule key=visudo list=exit res=yes 
+```
+
+### Linux Service File Created In Systemd Directory
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=PATH msg=audit(03/29/2023 19:12:25.815:10201) : item=0 name=/etc/systemd/system/hello_evil.service inode=34534443 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:systemd_unit_file_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+``` 
+
+
+### Linux PHP Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*php*-r*" AND Processes.process="*system*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_php_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 19:04:16.232:8832) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x564bbacf0248 a1=0x564bbad02198 a2=0x564bbad16e90 a3=0x0 items=2 ppid=11923 pid=11927 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=php exe=/usr/bin/php subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=php_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 19:04:16.232:8832) : argc=3 a0=php a1=-r a2=system(/bin/sh) 
+type=PATH msg=audit(03/29/2023 19:04:16.232:8832) : item=0 name=/bin/php inode=101567087 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 19:04:16.232:8832) : proctitle=php -r system(/bin/sh) 
+type=USER_CMD msg=audit(03/29/2023 19:04:16.170:8829) : pid=11923 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=php -r system(/bin/sh) terminal=pts/1 res=success' 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:03:56.521:8807) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=php_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:03:56.521:8699) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=php_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 19:03:45.167:8579) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=php_priv_escalation list=exit res=yes 
+```  
+
+
+### Linux Possible Access To Sudoers File
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_CMD msg=audit(03/29/2023 18:52:00.517:8080) : pid=11003 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=cat /etc/sudoers terminal=pts/1 res=success' 
+
+```  
+
+
+### Linux Possible Append Cronjob Entry on Existing Cronjob File
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: will not work as the search is looking for process containing "echo" and "/etc/at.allow". "echo" is a shell built-in command    
+Sample events:    
+
+```
+
+```  
+
+
+
+
+### Linux Add User Account
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=USER_MGMT msg=audit(03/29/2023 18:47:41.221:7988) : pid=10725 uid=root auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='op=add-home-dir id=peter1 exe=/usr/sbin/useradd hostname=localhost.localdomain addr=? terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.221:7987) : arch=x86_64 syscall=chmod success=yes exit=0 a0=0x55d3ad926540 a1=0700 a2=0x0 a3=0x3f items=1 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=perm_mod 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.221:7987) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7985) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff4 a2=0x7ffc75e55af0 a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7985) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7984) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff4 a2=0x7ffc75e55af0 a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7984) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7983) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff3 a2=0x7ffc75e55af1 a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7983) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7982) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff5 a2=0x7ffc75e55aef a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7982) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7981) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff4 a2=0x7ffc75e55af0 a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7981) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7980) : arch=x86_64 syscall=unlink success=yes exit=0 a0=0x7ffc75e55ae0 a1=0x7ffffff4 a2=0x7ffc75e55af0 a3=0x65726373662f7274 items=2 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7980) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.178:7979) : arch=x86_64 syscall=rename success=yes exit=0 a0=0x7ffc75e55ac0 a1=0x55d3acef8240 a2=0x7ffc75e55a30 a3=0x55d3accf21e8 items=5 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=delete 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.178:7979) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.175:7978) : arch=x86_64 syscall=fchmod success=yes exit=0 a0=0x5 a1=0644 a2=0x0 a3=0x1 items=1 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=etc_files 
+type=PROCTITLE msg=audit(03/29/2023 18:47:41.175:7978) : proctitle=useradd peter1 
+type=SYSCALL msg=audit(03/29/2023 18:47:41.175:7977) : arch=x86_64 syscall=fchown success=yes exit=0 a0=0x5 a1=0x0 a2=0x0 a3=0x1 items=1 ppid=10720 pid=10725 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=useradd exe=/usr/sbin/useradd subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=etc_files 
+```  
+
+
+### Linux Octave Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: could not install in centos 7    
+Sample events:    
+
+```
+
+```  
+
+
+### Linux High Frequency Of File Deletion In Etc Folder
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search: 
+```
+| tstats `security_content_summariesonly` values(Filesystem.file_name) as deletedFileNames values(Filesystem.user_category) as file_path_location dc(Filesystem.file_path) as numOfDelFilePath count min(_time) as firstTime max(_time) as lastTime 
+  FROM datamodel=Endpoint.Filesystem  
+  where Filesystem.action=deleted Filesystem.user_category=*etc*
+  | where numOfDelFilePath>=5
+```
+Limitations: This is possible in a different way as described:  
+1. Alias the obj field to an unused field in the datamodel e.g. user_category  
+2. change the search to the example above
+3. This search shows large number of deleted files in boot directory  
+Sample events:    
+```
+type=PATH msg=audit(03/29/2023 18:22:01.620:6794) : item=2 name=(null) inode=34534442 dev=fd:00 mode=dir,755 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/29/2023 18:22:01.620:6793) : item=1 name=file4 inode=34534448 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/29/2023 18:22:01.620:6792) : item=1 name=file3 inode=34534447 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/29/2023 18:22:01.620:6791) : item=1 name=file2 inode=34534446 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PATH msg=audit(03/29/2023 18:22:01.620:6790) : item=1 name=file1 inode=34534445 dev=fd:00 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:etc_t:s0 objtype=DELETE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+```
+
+
+
+### Linux apt-get Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: apt-get not suitable for Centos    
+Sample events:    
+
+```
+
+```  
+
+
+### Linux Cpulimit Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 18:17:28.624:6672) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x562c85a9d248 a1=0x562c85aaf198 a2=0x562c85ac3ea0 a3=0x0 items=2 ppid=8383 pid=8387 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=cpulimit exe=/usr/bin/cpulimit subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=cpulimit_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 18:17:28.624:6672) : argc=5 a0=cpulimit a1=-l a2=100 a3=-f a4=/bin/ls 
+type=PATH msg=audit(03/29/2023 18:17:28.624:6672) : item=0 name=/bin/cpulimit inode=101419744 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 18:17:28.624:6672) : proctitle=cpulimit -l 100 -f /bin/ls 
+type=USER_CMD msg=audit(03/29/2023 18:17:28.604:6669) : pid=8383 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=cpulimit -l 100 -f /bin/ls terminal=pts/1 res=success' 
+type=CONFIG_CHANGE msg=audit(03/29/2023 18:16:53.956:6656) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=cpulimit_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 18:16:53.911:6551) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=cpulimit_priv_escalation list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 18:16:48.408:6434) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=cpulimit_priv_escalation list=exit res=yes 
+type=SOFTWARE_UPDATE msg=audit(03/29/2023 18:16:12.021:6201) : pid=8212 uid=root auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='sw=cpulimit-1:0.2-1.20151118gitf4d2682.el6.x86_64 sw_type=rpm key_enforce=0 gpg_res=0 root_dir=/ comm=yum exe=/usr/bin/python2.7 hostname=localhost.localdomain addr=? terminal=pts/0 res=success' 
+```  
+
+
+### Linux APT Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations: apt does not work well on Centos, I could not get it to work  
+Sample events:    
+
+```
+
+```
+
+
+
+### Linux GDB Privilege Escalation
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+```
+| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time)
+  as lastTime from datamodel=Endpoint.Processes where Processes.process="*gdb*" AND Processes.process="*-nx*" AND Processes.process="*-ex*" by Processes.dest Processes.user Processes.parent_process_name
+  Processes.process_name Processes.process Processes.process_id Processes.parent_process_id
+  Processes.process_guid | `drop_dm_object_name(Processes)` | `security_content_ctime(firstTime)`
+  | `security_content_ctime(lastTime)` | `linux_gdb_privilege_escalation_filter`
+```
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 18:08:08.217:5971) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55aec5a42248 a1=0x55aec5a54198 a2=0x55aec5a67f80 a3=0x0 items=2 ppid=7621 pid=7623 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=gdb exe=/usr/bin/gdb subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=gdb_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 18:08:08.217:5971) : argc=11 a0=gdb a1=-nx a2=-ex a3=shred a4=-n a5=1 a6=-x a7=-z a8=/usr/lib/systemd/test_file a9=-ex a10=quit 
+type=PATH msg=audit(03/29/2023 18:08:08.217:5971) : item=0 name=/bin/gdb inode=101216555 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 18:08:08.217:5971) : proctitle=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file -ex quit 
+type=USER_CMD msg=audit(03/29/2023 18:08:08.170:5968) : pid=7621 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file -ex quit terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/29/2023 18:07:42.926:5955) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x556dd66de248 a1=0x556dd66f0198 a2=0x556dd6703f80 a3=0x0 items=2 ppid=7612 pid=7614 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=gdb exe=/usr/bin/gdb subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=gdb_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 18:07:42.926:5955) : argc=11 a0=gdb a1=-nx a2=-ex a3=shred a4=-n a5=1 a6=-x a7=-z a8=/usr/lib/systemd/test_file a9=-ex a10=quit 
+type=PATH msg=audit(03/29/2023 18:07:42.926:5955) : item=0 name=/bin/gdb inode=101216555 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 18:07:42.926:5955) : proctitle=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file -ex quit 
+type=USER_CMD msg=audit(03/29/2023 18:07:42.913:5952) : pid=7612 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file -ex quit terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/29/2023 18:05:19.118:5912) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x560155ab2248 a1=0x560155ac4198 a2=0x560155ad7f50 a3=0x0 items=2 ppid=7488 pid=7490 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=gdb exe=/usr/bin/gdb subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=gdb_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 18:05:19.118:5912) : argc=9 a0=gdb a1=-nx a2=-ex a3=shred a4=-n a5=1 a6=-x a7=-z a8=/usr/lib/systemd/test_file 
+type=PATH msg=audit(03/29/2023 18:05:19.118:5912) : item=0 name=/bin/gdb inode=101216555 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 18:05:19.118:5912) : proctitle=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file 
+type=USER_CMD msg=audit(03/29/2023 18:05:19.055:5909) : pid=7488 uid=test-2 auid=test-2 ses=339 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 msg='cwd=/home/test-2 cmd=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file terminal=pts/1 res=success' 
+type=SYSCALL msg=audit(03/29/2023 18:05:16.156:5907) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x26856f0 a1=0x2683d60 a2=0x2654ee0 a3=0x7ffc3ede28a0 items=2 ppid=6257 pid=7486 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=339 comm=gdb exe=/usr/bin/gdb subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=gdb_priv_escalation 
+type=EXECVE msg=audit(03/29/2023 18:05:16.156:5907) : argc=9 a0=gdb a1=-nx a2=-ex a3=shred a4=-n a5=1 a6=-x a7=-z a8=/usr/lib/systemd/test_file 
+type=PATH msg=audit(03/29/2023 18:05:16.156:5907) : item=0 name=/usr/bin/gdb inode=101216555 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 18:05:16.156:5907) : proctitle=gdb -nx -ex shred -n 1 -x -z /usr/lib/systemd/test_file 
+type=SYSCALL msg=audit(03/29/2023 18:03:53.039:5852) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x55fbc2b0d248 a1=0x55fbc2b1f198 a2=0x55fbc2b33ef0 a3=0x0 items=2 ppid=7330 pid=7334 auid=test-2 uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts1 ses=339 comm=gdb exe=/usr/bin/gdb subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=gdb_priv_escalation 
+``` 
+
+
+
+### Linux Kernel Module Enumeration
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 17:59:15.456:5288) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x2651e60 a1=0x2683ca0 a2=0x2654ee0 a3=0x7ffc3ede28a0 items=2 ppid=6257 pid=6937 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=339 comm=kmod exe=/usr/bin/kmod subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=kmod_list 
+type=EXECVE msg=audit(03/29/2023 17:59:15.456:5288) : argc=2 a0=kmod a1=list 
+type=PATH msg=audit(03/29/2023 17:59:15.456:5288) : item=0 name=/usr/bin/kmod inode=100940327 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:insmod_exec_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 17:59:15.456:5288) : proctitle=kmod list 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:59:07.290:5286) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=kmod_list list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:59:07.290:5183) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=kmod_list list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:59:03.220:5068) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=kmod_list list=exit res=yes
+```  
+
+
+
+### Linux Shred Overwrite Command
+
+Datamodel: 
+Auditd config:   
+CIM Mapping: 
+Search:  
+Limitations:   
+Sample events:    
+
+```
+type=SYSCALL msg=audit(03/29/2023 17:53:44.604:4515) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x26490c0 a1=0x2655460 a2=0x2654ee0 a3=0x7ffc3ede28a0 items=2 ppid=6257 pid=6428 auid=test-2 uid=test-2 gid=test-2 euid=test-2 suid=test-2 fsuid=test-2 egid=test-2 sgid=test-2 fsgid=test-2 tty=pts1 ses=339 comm=shred exe=/usr/bin/shred subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=shred_command 
+type=EXECVE msg=audit(03/29/2023 17:53:44.604:4515) : argc=6 a0=shred a1=-n a2=1 a3=-x a4=-z a5=/usr/lib/systemd/test_file 
+type=PATH msg=audit(03/29/2023 17:53:44.604:4515) : item=0 name=/usr/bin/shred inode=100818001 dev=fd:00 mode=file,755 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:bin_t:s0 objtype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
+type=PROCTITLE msg=audit(03/29/2023 17:53:44.604:4515) : proctitle=shred -n 1 -x -z /usr/lib/systemd/test_file 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:53:16.659:4513) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=add_rule key=shred_command list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:53:16.659:4411) : auid=unset ses=unset subj=system_u:system_r:unconfined_service_t:s0 op=remove_rule key=shred_command list=exit res=yes 
+type=CONFIG_CHANGE msg=audit(03/29/2023 17:53:09.480:4297) : auid=root ses=318 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 op=add_rule key=shred_command list=exit res=yes 
+```  
+
 
 ### Linux Sudoers Tmp File Creation
 
@@ -1750,12 +2052,6 @@ type=PATH msg=audit(01/03/2023 17:56:29.074:709) : item=1 name=/lib/modules/3.10
 type=PROCTITLE msg=audit(01/03/2023 17:56:29.074:709) : proctitle=touch /lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/test-kernel-driv-file3.txt 
 ```
 
-
-### Linux High Frequency Of File Deletion In Etc Folder
-
-PROCESS & FILESYSYTEM
-
-This is a ttp search - will require new search to be built
 
 
 
