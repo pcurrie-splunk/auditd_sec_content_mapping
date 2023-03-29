@@ -89,7 +89,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Insert Kernel Module Using Insmod Utility](#Linux-Insert-Kernel-Module-Using-Insmod-Utility) | d |
 | [Linux Edit Cron Table Parameter](#Linux-Edit-Cron-Table-Parameter) | d |
 | [Linux Possible Cronjob Modification With Editor](#Linux-Possible-Cronjob-Modification-With-Editor) | d |
-| Linux Setuid Using Chmod Utility(#Linux-Setuid-Using-Chmod-Utility) | d |
+| Linux Setuid Using Chmod Utility](#Linux-Setuid-Using-Chmod-Utility) | d |
 | [Linux Possible Append Command To Profile Config File](#Linux-Possible-Append-Command-To-Profile-Config-File) | d |
 | [Linux Decode Base64 to Shell](#Linux-Decode-Base64-to-Shell) | d |
 | [Linux MySQL Privilege Escalation](#Linux-MySQL-Privilege-Escalation) | d |
