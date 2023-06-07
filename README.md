@@ -125,7 +125,7 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | [Linux Add User Account](#Linux-Add-User-Account) | d |
 | [Linux Possible Append Cronjob Entry on Existing Cronjob File](#Linux-Possible-Append-Cronjob-Entry-on-Existing-Cronjob-File) | shell built-in |
 | [Linux Possible Access To Sudoers File](#Linux-Possible-Access-To-Sudoers-File) | d |
-| [Linux PHP Privilege Escalation](#Linux-PHP-Privilege-Escalation) | d |
+| [Linux PHP Privilege Escalation](#Linux-PHP-Privilege-Escalation) | d | d |
 | [Linux Service File Created In Systemd Directory](#Linux-Service-File-Created-In-Systemd-Directory) | d |
 | [Linux Visudo Utility Execution](#Linux-Visudo-Utility-Execution) | d |
 
