@@ -194,6 +194,10 @@ Search:
   | `security_content_ctime(lastTime)` | `linux_php_privilege_escalation_filter`
 ```
 Limitations:   
+Command triggering events:
+```
+sudo php -r 'system(getenv("CMD"));'
+```
 Sample events:    
 
 ```
