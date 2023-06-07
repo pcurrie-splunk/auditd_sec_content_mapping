@@ -41,8 +41,8 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 
 | Search | done |
 | --- | --- |
-| [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) | d |
-| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | 
+| [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) | d | d |
+| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | ip |
 | [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) | d |
 | [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) | d |
 | [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) | d |
@@ -1685,6 +1685,7 @@ CIM Mapping: file_path, dest file_name, process_guid.
 Search: No change. 
 Limitations: The auditd configuration for this rule only audits root user keys (changes in /root/.ssh/ directory). Other user accounts are not picked up (e.g. /home/testUser/.ssh/). It may be possible to monitor /home.  
 Known false positives:-   
+command: sudo touch /root/.ssh/testfile2
 Sample events:  
 ```
 type=PATH msg=audit(01/22/2023 03:44:58.662:5955) : item=0 name=/root/.ssh/ inode=33563192 dev=fd:00 mode=dir,700 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:ssh_home_t:s0 objtype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 
