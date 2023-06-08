@@ -30,6 +30,8 @@ https://splunkbase.splunk.com/app/4232
 
 ### 3. Install the auditd_sec_content_mapping add-on
 
+auditd_sec_content_mapping.spl
+
 This add-on contains props/transforms/lookups etc. for parsing auditd logs.
 
 It also contains dashboard showing list of configured auditd risk detections, and the risk they have assigned over the period of the search.
