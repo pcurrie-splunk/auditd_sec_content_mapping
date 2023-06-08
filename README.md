@@ -28,11 +28,13 @@ https://splunkbase.splunk.com/app/3412
 
 https://splunkbase.splunk.com/app/4232
 
-### 3. Additional Splunk config
+### 3. Install the auditd_sec_content_mapping add-on
 
-1. props.conf
-2. eventtypes.conf
-3. tags.conf
+This add-on contains props/transforms/lookups etc. for parsing auditd logs.
+
+It also contains dashboard showing list of configured auditd risk detections, and the risk they have assigned over the period of the search.
+<img width="1402" alt="image" src="https://github.com/pcurrie-splunk/auditd_sec_content_mapping/assets/111749978/fad924a1-6a1e-4318-bdaf-f954f5a904c4">
+
 
 
 ## Full list of detections (31 Jan 2023)
