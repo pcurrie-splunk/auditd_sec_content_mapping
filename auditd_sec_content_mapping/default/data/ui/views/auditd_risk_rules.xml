@@ -1,0 +1,32 @@
+<dashboard version="1.1">
+  <label>Auditd Risk Rules</label>
+  <row>
+    <panel>
+      <title>Enabled Risk Rules by score</title>
+      <table>
+        <search>
+          <query>| rest splunk_server=local count=0 /services/saved/searches
+| where match('action.correlationsearch', "1|[Tt]|[Tt][Rr][Uu][Ee]") OR match('action.risk', "1|[Tt]|[Tt][Rr][Uu][Ee]") 
+| where disabled=0 
+| eval Enabled=if(disabled=0,"Yes","No") 
+| rename action.correlationsearch.enabled as enabled, action.notable.param.rule_description as Description, title as Title , author as Author 
+| fields Title Enabled Author
+| append [| from datamodel:"Risk"."All_Risk" | search   risk_object_type="*" risk_object="*" | rename calculated_risk_score as risk_score | rename source as Title | `default_entity_zone` 
+| table _time, risk_object, risk_object_type, cim_entity_zone, threat_object, threat_object_type,Title, risk_message, risk_score, annotations._all, annotations._frameworks
+| stats sum(risk_score) as total_risk_score by Title]
+| stats first(*) as * by Title</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

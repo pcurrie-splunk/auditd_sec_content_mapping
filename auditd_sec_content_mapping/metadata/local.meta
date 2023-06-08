@@ -1,0 +1,158 @@
+[app/ui]
+version = 9.0.3
+modtime = 1681813075.619621000
+
+[app/launcher]
+version = 9.0.3
+modtime = 1681813075.621637000
+
+[props/linux%3Aaudit/FIELDALIAS-extract_process_guid]
+version = 9.0.3
+modtime = 1681813111.532972000
+
+[props/linux%3Aaudit/FIELDALIAS-parent_process_id]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813125.344532000
+
+[props/linux%3Aaudit/FIELDALIAS-user_cateogry]
+version = 9.0.3
+modtime = 1681813136.447505000
+
+[props/linux%3Aaudit/EVAL-file_create_time]
+version = 9.0.3
+modtime = 1681813278.009496000
+
+[props/linux%3Aaudit/EVAL-file_name]
+version = 9.0.3
+modtime = 1681813306.084227000
+
+[props/linux%3Aaudit/EVAL-file_path]
+version = 9.0.3
+modtime = 1681813323.347343000
+
+[props/linux%3Aaudit/EVAL-filesystem_action]
+version = 9.0.3
+modtime = 1681813340.755071000
+
+[props/linux%3Aaudit/EVAL-parent_process]
+version = 9.0.3
+modtime = 1681813358.052342000
+
+[props/linux%3Aaudit/EVAL-parent_process_id]
+version = 9.0.3
+modtime = 1681813376.695159000
+
+[props/linux%3Aaudit/EVAL-parent_process_name]
+version = 9.0.3
+modtime = 1681813392.363379000
+
+[props/linux%3Aaudit/EVAL-process]
+version = 9.0.3
+modtime = 1681813412.509056000
+
+[props/linux%3Aaudit/EVAL-process_id]
+version = 9.0.3
+modtime = 1681813431.154976000
+
+[props/linux%3Aaudit/EVAL-process_name]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813447.843640000
+
+[props/linux%3Aaudit/EVAL-user]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813464.040237000
+
+[props/linux%3Aaudit/EXTRACT-full_cmd]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813497.197522000
+
+[props/linux%3Aaudit/EXTRACT-proctitle]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813515.977913000
+
+[lookups/filesystem_action]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813548.200702000
+
+[transforms/filesystem_action]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.3
+modtime = 1681813562.467039000
+
+[eventtypes/linux_audit_endpoint_filesystem]
+version = 9.0.3
+modtime = 1681813882.315661000
+
+[eventtypes/linux_audit_endpoint_processes]
+version = 9.0.3
+modtime = 1681813902.433979000
+
+[tags/eventtype%3Dlinux_audit_endpoint_filesystem]
+version = 9.0.3
+modtime = 1681813993.261087000
+
+[tags/eventtype%3Dlinux_audit_endpoint_processes]
+version = 9.0.3
+modtime = 1681814000.495554000
+
+[app/install/install_source_checksum]
+version = 9.0.4.1
+modtime = 1686127484.399274000
+
+[]
+access = read : [ * ], write : [ admin, power ]
+export = system
+version = 9.0.4.1
+modtime = 1686128394.568701000
+
+[savedsearches/all%20auditd%20data]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 9.0.4.1
+modtime = 1686128800.041830000
+
+[savedsearches/Threat%20-%20Auditd%20-%20ESCU%20-%20Linux%20PHP%20Privilege%20Escalation%20-%20Rule%20-%20Rule]
+owner = admin
+version = 9.0.4.1
+modtime = 1686150903.086424000
+
+[views/auditd_risk_rules]
+owner = admin
+version = 9.0.4.1
+modtime = 1686152146.804652000
+
+[savedsearches/Threat%20-%20Auditd%20-%20ESCU%20-%20Linux%20Possible%20Ssh%20Key%20File%20Creation%20-%20Rule%20-%20Rule]
+owner = admin
+version = 9.0.4.1
+modtime = 1686153122.192236000
+
+[savedsearches/Threat%20-%20Auditd%20-%20ESCU%20-%20Linux%20Possible%20Access%20Or%20Modification%20Of%20sshd%20Config%20File%20-%20Rule%20-%20Rule]
+owner = admin
+version = 9.0.4.1
+modtime = 1686153604.158433000
+
+[savedsearches/Threat%20-%20Auditd%20-%20ESCU%20-%20Linux%20File%20Created%20In%20Kernel%20Driver%20Directory%20-%20Rule%20-%20Rule]
+owner = admin
+version = 9.0.4.1
+modtime = 1686154141.808392000
