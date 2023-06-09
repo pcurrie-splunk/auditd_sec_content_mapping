@@ -46,8 +46,8 @@ Source: https://github.com/splunk/security_content/tree/develop/detections/endpo
 | Search | done |
 | --- | --- |
 | [Linux Possible Ssh Key File Creation](#linux-possible-ssh-key-file-creation) | d | d |
-| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | ip |
-| [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) | d |
+| [Linux Possible Access Or Modification Of sshd Config File](#Linux-Possible-Access-Or-Modification-of-sshd-config-file) | d | d |
+| [Linux File Created In Kernel Driver Directory](#Linux-File-created-In-Kernel-Driver-Directory) | d | d |
 | [Linux NOPASSWD Entry In Sudoers File](#Linux-NOPASSWD-Entry-In-Sudoers-File) | d |
 | [Linux c89 Privilege Escalation](#Linux-c89-Privilege-Escalation) | d |
 | [Linux Doas Tool Execution](#Linux-Doas-Tool-Execution) | Not available in Centos |
@@ -2050,6 +2050,7 @@ Auditd config: Yes.
 CIM Mapping: Yes.  
 Search: No change required.  
 Limitations: Ensure the directory containing ~/kernel/drivers/* is monitored by auditd. This may change on kernel upgrades etc.  
+Command: sudo touch /lib/modules/3.10.0-1160.el7.x86_64/kernel/drivers/test-kernel-driv-file4.txt    
 Sample events:    
 
 ```
